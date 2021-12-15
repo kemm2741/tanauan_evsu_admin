@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useContext } from "react";
+import "./App.css";
 
 // React Router Dom
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
@@ -36,6 +37,9 @@ import AlumniForm from "./pages/AlumniForm";
 import PrivateRoute from "./components/PrivateRoute";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 
+// Context
+import AuthContext from "./context/auth/authContext";
+
 const theme = createMuiTheme({
   palette: {
     primary: {
@@ -48,6 +52,11 @@ const theme = createMuiTheme({
 });
 
 function App() {
+  const authContext = useContext(AuthContext);
+  // Global Context
+  // States on global context
+  // const { isAuthenticatedLogin } = authContext;
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -98,28 +107,24 @@ function App() {
               <Logs />
             </PrivateRoute>
 
+            <PrivateRoute path="/createEvent">
+              <CreateEvent />
+            </PrivateRoute>
+
+            <PrivateRoute path="/createJob">
+              <CreateJob />
+            </PrivateRoute>
+
             {/* Not Protected Routes  */}
+
             <Route exact path="/login">
               <Login />
             </Route>
 
-            <Route path="/alumniform">
-              <AlumniForm />
-            </Route>
-
-            {/* Create Pages */}
-            <Route path="/createEvent">
-              <CreateEvent />
-            </Route>
-
-            <Route path="/createJob">
-              <CreateJob />
-            </Route>
-
             {/* 404 Page Not Found */}
-            <Route exact path="*">
+            <PrivateRoute exact path="*">
               <NotFound />
-            </Route>
+            </PrivateRoute>
           </Switch>
         </Layout>
       </Router>

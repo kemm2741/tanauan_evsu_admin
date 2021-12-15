@@ -1,6 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
+
+// BASE URL
+import { baseURL } from "../utils/baseURL";
+
 // React Router Dom
 import { useHistory } from "react-router-dom";
+
+// Import Axios
+import axios from "axios";
 
 // Sweet Alert
 import Swal from "sweetalert2";
@@ -11,7 +18,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import CircularProgress from "@material-ui/core/CircularProgress";
-
+import Link from "@material-ui/core/Link";
+import Grid from "@material-ui/core/Grid";
 // Login Actions
 import AuthContext from "../context/auth/authContext";
 
@@ -75,6 +83,11 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: "10px",
     marginTop: "5px",
   },
+  forgotPasswordContainer: {
+    marginTop: "30px",
+    display: "flex",
+    justifyContent: "center",
+  },
 }));
 
 const Login = () => {
@@ -90,6 +103,7 @@ const Login = () => {
     password: "",
   };
 
+  const [loadingResetPassword, setLoadingResetPassword] = useState(false);
   const [loginData, setLoginData] = useState(initialState);
   const handleOnChange = (e) => {
     const { name, value } = e.target;
@@ -126,14 +140,14 @@ const Login = () => {
 
   useEffect(() => {
     if (isAuthenticatedLogin) {
-      Swal.fire("Success Login", "Welcome to EVSU Alumni Tracer", "success");
+      // Swal.fire("Success Login", "Welcome to EVSU Alumni Tracer", "success");
       history.push("/");
     }
   }, [isAuthenticatedLogin]);
 
   return (
     <>
-      {isLoading ? (
+      {isLoading || loadingResetPassword ? (
         <div className={classes.loadingContainer}>
           <CircularProgress />
         </div>
@@ -200,6 +214,51 @@ const Login = () => {
                 type="submit"
                 value="Login"
               />
+
+              <Grid
+                onClick={async () => {
+                  const { value: email } = await Swal.fire({
+                    title: "Input email address",
+                    input: "email",
+                    inputLabel: "Your email address",
+                    inputPlaceholder: "Enter your email address",
+                    confirmButtonColor: "#710000",
+                    inputAttributes: {
+                      autocomplete: "off",
+                    },
+                  });
+
+                  if (email?.trim()) {
+                    try {
+                      setLoadingResetPassword(true);
+                      const { data } = await axios.post(
+                        `${baseURL}/resetpasswordadmin`,
+                        { email }
+                      );
+                      Swal.fire(`${data.msg}`);
+
+                      await axios
+                        .post(`${baseURL}/log`, {
+                          name: data.email,
+                          logDescription: "Resetted Password",
+                        })
+                        .then((res) => {
+                          console.log(res.data);
+                        })
+                        .catch((err) => console.log(err.response.data.msg));
+
+                      setLoadingResetPassword(false);
+                    } catch (err) {
+                      Swal.fire(`${err.response.data.msg}`);
+                      setLoadingResetPassword(false);
+                    }
+                  }
+                }}
+                className={classes.forgotPasswordContainer}
+                item
+              >
+                <Link variant="body2">{"Reset Password?"}</Link>
+              </Grid>
             </form>
           </div>
         </>

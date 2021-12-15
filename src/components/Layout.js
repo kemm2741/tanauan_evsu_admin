@@ -137,11 +137,11 @@ export default function Layout({ children }) {
       icon: <CgProfile size={26} />,
       path: "/profile",
     },
-    {
-      text: "Alumni Form",
-      icon: <AiOutlineForm size={26} />,
-      path: "/alumniform",
-    },
+    // {
+    //   text: "Alumni Form",
+    //   icon: <AiOutlineForm size={26} />,
+    //   path: "/alumniform",
+    // },
     {
       text: "Activity Logs",
       icon: <FaRegCalendarTimes size={26} />,

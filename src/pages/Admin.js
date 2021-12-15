@@ -27,6 +27,13 @@ const useStyles = makeStyles((theme) => ({
   formContainer: {
     padding: theme.spacing(3),
   },
+  circularContainer: {
+    width: "100%",
+    height: "30vh",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
 }));
 
 const Admin = () => {
@@ -56,6 +63,7 @@ const Admin = () => {
 
   const [data, setData] = useState();
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingCreateUser, setIsLoadingCreateUser] = useState(false);
 
   // Fetch Admins
   const fetchAdmins = async () => {
@@ -102,16 +110,22 @@ const Admin = () => {
 
     // Post Request to Create Admin
     try {
-      await axios.post(`${baseURL}/admin`, {
+      setIsLoadingCreateUser(true);
+
+      const { data } = await axios.post(`${baseURL}/admin`, {
         userName,
         email,
         phoneNumber,
         password,
       });
-      Swal.fire("Success", "New admin was created", "success");
+
+      Swal.fire("Success", `${data.msg}`, "success");
       fetchAdmins();
+
+      setIsLoadingCreateUser(false);
     } catch (error) {
       Swal.fire("Error", `${error.response.data.msg}`, "error");
+      setIsLoadingCreateUser(false);
     }
 
     // Reset State
@@ -125,78 +139,86 @@ const Admin = () => {
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} md={4} lg={3}>
-        <Grid container>
-          <Card className={classes.formContainer}>
-            <CardContent>
-              <Typography gutterBottom variant="h5">
-                Create Admin
-              </Typography>
-              <Typography paragraph color="textSecondary" gutterBottom>
-                Create a new admin.
-              </Typography>
-            </CardContent>
-            <form noValidate autoComplete="off">
-              <Grid container spacing={2}>
-                <Grid xs={12} sm={12} item>
-                  <TextField
-                    onChange={handleOnChange}
-                    value={admin.userName}
-                    name="userName"
-                    label="Username"
-                    variant="outlined"
-                    fullWidth
-                  />
-                </Grid>
-                <Grid xs={12} sm={12} item>
-                  <TextField
-                    onChange={handleOnChange}
-                    value={admin.email}
-                    name="email"
-                    label="Email"
-                    variant="outlined"
-                    fullWidth
-                  />
-                </Grid>
+        {isLoadingCreateUser ? (
+          <div className={classes.circularContainer}>
+            <CircularProgress />
+          </div>
+        ) : (
+          <>
+            <Grid container>
+              <Card className={classes.formContainer}>
+                <CardContent>
+                  <Typography gutterBottom variant="h5">
+                    Create Admin
+                  </Typography>
+                  <Typography paragraph color="textSecondary" gutterBottom>
+                    Create a new admin.
+                  </Typography>
+                </CardContent>
+                <form noValidate autoComplete="off">
+                  <Grid container spacing={2}>
+                    <Grid xs={12} sm={12} item>
+                      <TextField
+                        onChange={handleOnChange}
+                        value={admin.userName}
+                        name="userName"
+                        label="Username"
+                        variant="outlined"
+                        fullWidth
+                      />
+                    </Grid>
+                    <Grid xs={12} sm={12} item>
+                      <TextField
+                        onChange={handleOnChange}
+                        value={admin.email}
+                        name="email"
+                        label="Email"
+                        variant="outlined"
+                        fullWidth
+                      />
+                    </Grid>
 
-                <Grid xs={12} sm={12} item>
-                  <TextField
-                    onChange={handleOnChange}
-                    value={admin.phoneNumber}
-                    name="phoneNumber"
-                    label="Phone Number"
-                    variant="outlined"
-                    fullWidth
-                  />
-                </Grid>
+                    <Grid xs={12} sm={12} item>
+                      <TextField
+                        onChange={handleOnChange}
+                        value={admin.phoneNumber}
+                        name="phoneNumber"
+                        label="Phone Number"
+                        variant="outlined"
+                        fullWidth
+                      />
+                    </Grid>
 
-                <Grid xs={12} sm={12} item>
-                  <TextField
-                    onChange={handleOnChange}
-                    value={admin.password}
-                    name="password"
-                    label="Password"
-                    type="password"
-                    variant="outlined"
-                    fullWidth
-                  />
-                </Grid>
+                    <Grid xs={12} sm={12} item>
+                      <TextField
+                        onChange={handleOnChange}
+                        value={admin.password}
+                        name="password"
+                        label="Password"
+                        type="password"
+                        variant="outlined"
+                        fullWidth
+                      />
+                    </Grid>
 
-                <Grid xs={12} sm={12} item>
-                  <Button
-                    className={classes.formButton}
-                    onClick={handleSubmit}
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                  >
-                    Submit
-                  </Button>
-                </Grid>
-              </Grid>
-            </form>
-          </Card>
-        </Grid>
+                    <Grid xs={12} sm={12} item>
+                      <Button
+                        className={classes.formButton}
+                        onClick={handleSubmit}
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                      >
+                        Submit
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </form>
+              </Card>
+            </Grid>
+          </>
+        )}
       </Grid>
 
       <Grid item xs={12} md={8} lg={9}>

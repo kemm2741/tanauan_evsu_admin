@@ -108,7 +108,7 @@ const Logs = () => {
         options={{
           // exportButton: true,
           filtering: true,
-          pageSize: 6,
+          pageSize: 9,
           toolbar: true,
           actionsColumnIndex: -1,
           addRowPosition: "first",
