@@ -62,7 +62,7 @@ const AuthState = (props) => {
         type: LOGIN_ADMIN_REQUEST,
       });
       const { data } = await axios.post(`${baseURL}/loginadmin`, {
-        userName: loginData.userName,
+        email: loginData.email,
         password: loginData.password,
       });
       dispatch({
@@ -73,46 +73,6 @@ const AuthState = (props) => {
     } catch (error) {
       dispatch({
         type: LOGIN_ADMIN_FAIL,
-        payload: error.response.data.msg,
-      });
-    }
-  };
-  // ------------------------------------------------ LOGIN USER -------------------------------- //
-
-  const loadUser = async () => {
-    setAuthToken(localStorage.token);
-    try {
-      dispatch({
-        type: LOAD_USER_REQUEST,
-      });
-
-      const { data } = await axios.get(`${baseURL}/loginuser`);
-      dispatch({
-        type: LOAD_USER_SUCCESS,
-        payload: data,
-      });
-    } catch (err) {
-      dispatch({ type: LOAD_USER_FAIL });
-    }
-  };
-
-  const loginUser = async (loginData) => {
-    try {
-      dispatch({
-        type: LOGIN_USER_REQUEST,
-      });
-      const { data } = await axios.post(`${baseURL}/loginuser`, {
-        email: loginData.email,
-        password: loginData.password,
-      });
-      dispatch({
-        type: LOGIN_USER_SUCCESS,
-        payload: data,
-      });
-      loadUser();
-    } catch (error) {
-      dispatch({
-        type: LOGIN_USER_FAIL,
         payload: error.response.data.msg,
       });
     }
@@ -131,8 +91,8 @@ const AuthState = (props) => {
         errorLogin: state.errorLogin,
         loadAdmin,
         loginAdmin,
-        loadUser,
-        loginUser,
+        // loadUser,
+        // loginUser,
         logout,
       }}
     >

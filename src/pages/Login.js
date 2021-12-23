@@ -99,7 +99,7 @@ const Login = () => {
     authContext;
 
   const initialState = {
-    userName: "",
+    email: "",
     password: "",
   };
 
@@ -115,7 +115,7 @@ const Login = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if (loginData.userName === "" && loginData.password === "") {
+    if (loginData.email === "" && loginData.password === "") {
       return Swal.fire(
         "Error Login",
         "Please provide valid email and password",
@@ -123,7 +123,7 @@ const Login = () => {
       );
     }
 
-    if (loginData.userName === "") {
+    if (loginData.email === "") {
       return Swal.fire("Error Login", "Email must not be empty!", "error");
     }
 
@@ -193,10 +193,10 @@ const Login = () => {
               <TextField
                 className={classes.formInput}
                 onChange={handleOnChange}
-                name="userName"
+                name="email"
                 type="text"
-                label="Admin Username"
-                value={loginData.userName}
+                label="Admin"
+                value={loginData.email}
                 variant="outlined"
               />
               <TextField
@@ -232,7 +232,7 @@ const Login = () => {
                     try {
                       setLoadingResetPassword(true);
                       const { data } = await axios.post(
-                        `${baseURL}/resetpasswordadmin`,
+                        `${baseURL}/admin/reset-admin`,
                         { email }
                       );
                       Swal.fire(`${data.msg}`);

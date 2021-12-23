@@ -116,7 +116,6 @@ function App() {
             </PrivateRoute>
 
             {/* Not Protected Routes  */}
-
             <Route exact path="/login">
               <Login />
             </Route>
