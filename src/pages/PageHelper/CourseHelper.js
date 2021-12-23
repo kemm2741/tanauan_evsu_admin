@@ -4,22 +4,73 @@ import React, { useState } from "react";
 import MaterialTable from "material-table";
 
 const CourseHelper = ({ graduates, courseName }) => {
+  // Calcualte Age
+  const calculateAge = (date) => {
+    const today = new Date();
+    const birthDate = new Date(date); // create a date object directly from dob1 argument
+    let age_now = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age_now--;
+    }
+    return age_now;
+  };
+
+  const withAge = graduates.map((graduate) => {
+    return {
+      ...graduate,
+      age: calculateAge(graduate.dateOfBirth),
+    };
+  });
+
   const [columns, setColumns] = useState([
-    { title: "Name", field: "name" },
+    {
+      title: "First Name",
+      field: "firstname",
+    },
     {
       title: "Middle Name",
-      field: "middleName",
-      //   initialEditValue: "initial edit value",
+      field: "middlename",
     },
-    { title: "Last Name", field: "lastName" },
+    {
+      title: "Last Name",
+      field: "lastname",
+    },
+    {
+      title: "Contact Number",
+      field: "phone",
+    },
+    {
+      title: "Gender",
+      field: "sex",
+    },
+    {
+      title: "Age",
+      field: "age",
+    },
+    {
+      title: "Birth Date",
+      field: "dateOfBirth",
+      type: "date",
+      editable: false,
+      dateSetting: {
+        format: "dd/MM/yyyy",
+      },
+    },
     {
       title: "Batch",
-      field: "batch",
+      field: "yearGraduated",
+    },
+    {
+      title: "Present Occupation",
+      field: "presentOccupation",
       filtering: false,
     },
   ]);
 
-  const [data, setData] = useState(graduates);
+  const [data, setData] = useState(withAge);
+
+  console.log(graduates);
 
   return (
     <div style={{ padding: "40px" }}>

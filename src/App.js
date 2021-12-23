@@ -37,6 +37,9 @@ import AlumniForm from "./pages/AlumniForm";
 import PrivateRoute from "./components/PrivateRoute";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 
+// Archieves
+import ArchieveCourse from "./pages/ArchieveCourses";
+
 // Context
 import AuthContext from "./context/auth/authContext";
 
@@ -78,6 +81,10 @@ function App() {
             <PrivateRoute path="/courses">
               <Courses />
             </PrivateRoute>
+
+            <Route path="/archieve-course">
+              <ArchieveCourse />
+            </Route>
 
             <PrivateRoute path="/admin">
               <Admin />

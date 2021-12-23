@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
+import Button from "@material-ui/core/Button";
 
 // ! Base URL
 import { baseURL } from "../utils/baseURL";
+
+import { GrRevert } from "react-icons/gr";
 
 // Rechart
 import {
@@ -21,12 +25,14 @@ import Swal from "sweetalert2";
 import axios from "axios";
 
 // Import matarial table
-import MaterialTable from "material-table";
+import MaterialTable, { MTableToolbar } from "material-table";
 
 // Page Helper Component
 import CourseHelper from "./PageHelper/CourseHelper";
 
 const Courses = () => {
+  const history = useHistory();
+
   const [data, setData] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [columns, setColumns] = useState([
@@ -54,6 +60,8 @@ const Courses = () => {
     try {
       setIsLoading(true);
       const { data } = await axios.get(`${baseURL}/course`);
+
+      console.log(data);
 
       const mainData = data.map((item) => {
         return {
@@ -117,6 +125,54 @@ const Courses = () => {
           actionsColumnIndex: -1,
           addRowPosition: "first",
         }}
+        actions={[
+          {
+            icon: () => <GrRevert size={24} />,
+            tooltip: "Archieve Course",
+            onClick: (event, rowData) => {
+              Swal.fire({
+                title: "Are you sure you want to archieve this course?",
+                // text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes",
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  axios
+                    .delete(`${baseURL}/course/${rowData._id}`)
+                    .then(({ data }) => {
+                      console.log(data);
+                      fetchCourse();
+                    })
+                    .catch((err) => {
+                      console.log(err);
+                      fetchCourse();
+                    });
+                }
+              });
+            },
+          },
+        ]}
+        components={{
+          Toolbar: (props) => (
+            <div>
+              <MTableToolbar {...props} />
+              <div style={{ padding: "0px 10px" }}>
+                <Button
+                  onClick={() => {
+                    history.push("/archieve-course");
+                  }}
+                  variant="contained"
+                  color="primary"
+                >
+                  Archieve Course
+                </Button>
+              </div>
+            </div>
+          ),
+        }}
         detailPanel={(rowData) => {
           return (
             <CourseHelper
@@ -154,22 +210,6 @@ const Courses = () => {
                   setTimeout(() => {
                     fetchCourse();
                     Swal.fire("Success", "Success updating course", "success");
-                    resolve();
-                  }, 1000);
-                })
-                .catch((err) => {
-                  console.log(err);
-                  resolve();
-                });
-            }),
-          onRowDelete: (oldData) =>
-            new Promise((resolve, reject) => {
-              axios
-                .delete(`${baseURL}/course/${oldData._id}`)
-                .then((res) => {
-                  setTimeout(() => {
-                    fetchCourse();
-                    Swal.fire("Success", "Course deleted", "success");
                     resolve();
                   }, 1000);
                 })
