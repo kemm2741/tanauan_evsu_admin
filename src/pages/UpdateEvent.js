@@ -5,14 +5,18 @@ import { EditorState, convertToRaw, ContentState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
 
+import { useHistory } from "react-router-dom";
+
 import Swal from "sweetalert2";
+
+import { useParams } from "react-router-dom";
 
 //! Base URL;
 import { baseURL } from "../utils/baseURL";
 
 // Base 64
 import base64 from "../utils/base64";
-import ImageGallery from "../utils/ImageGallery";
+import UpdateGallery from "../utils/UpdateGallery";
 
 // Material UI
 import { makeStyles } from "@material-ui/core/styles";
@@ -70,8 +74,11 @@ const useStyles = makeStyles({
   },
 });
 
-const CreateEvent = () => {
+const UpdateEvent = () => {
   const classes = useStyles();
+  const { id } = useParams();
+
+  const history = useHistory();
 
   const intialState = {
     eventTitle: "",
@@ -123,6 +130,67 @@ const CreateEvent = () => {
 
   // Image Upload Change
   const [images, setImages] = useState([]);
+  const [addingUpdateImages, setAddingUpdateImages] = useState([]);
+
+  //   const [updateProduct, setUpdateProduct] = useState(null);
+
+  const handlingRemove = async (item) => {
+    const { _id, status } = item;
+    // const productId = updateProduct._id;
+
+    if (status === "new") {
+      const adding = addingUpdateImages.filter((val) => val._id !== _id);
+      const filteredImages = images
+        .filter((data) => data._id !== _id)
+        .map((image, idx) => {
+          if (idx === 0) {
+            return {
+              ...image,
+              img: image.url,
+              active: true,
+            };
+          }
+          return {
+            ...image,
+            img: image.url,
+            active: true,
+          };
+        });
+
+      setImages(filteredImages);
+      setAddingUpdateImages(adding);
+
+      return;
+    }
+
+    const res = await axios.post(`${baseURL}/event/event-deleting-image/`, {
+      eventId: id,
+      imageId: _id,
+    });
+
+    if (res.status === 200) {
+      const filteredImages = images
+        .filter((data) => data._id !== _id)
+        .map((image, idx) => {
+          if (idx === 0) {
+            return {
+              ...image,
+              img: image.url,
+              active: true,
+            };
+          }
+          return {
+            ...image,
+            img: image.url,
+            active: true,
+          };
+        });
+
+      setImages(filteredImages);
+    } else {
+      Swal.fire("error", "Failed to delete image", "error");
+    }
+  };
 
   const handleImageChange = (e) => {
     const { files } = e.target;
@@ -152,7 +220,11 @@ const CreateEvent = () => {
       ? draftToHtml(convertToRaw(editorState.getCurrentContent()))
       : "<span></span>";
 
-    const course = selectedCourse.map((data) => data.value);
+    const course = selectedCourse.map((data) => {
+      return {
+        course: data.value,
+      };
+    });
 
     if (selectedDate === " ") {
       return Swal.fire("error", "Date must not be empty", "error");
@@ -172,27 +244,113 @@ const CreateEvent = () => {
       }
     }
 
-    if (images.length < 1) {
-      return Swal.fire("error", "Image is required at least 1", "error");
-    }
-
     form.append("eventSchedule", selectedDate);
     form.append("eventTitle", eventData.eventTitle);
     form.append("eventDescription", description);
     form.append("type", type);
     form.append("course", JSON.stringify(course));
 
-    for (let image of images) {
+    for (let image of addingUpdateImages) {
       form.append("images", image.file);
-
-      console.log(image.file);
     }
 
     try {
       setIsLoading(true);
-      const { data } = await axios.post(`${baseURL}/event`, form);
+      const { data } = await axios.put(`${baseURL}/event/${id}`, form);
       console.log(data);
       setIsLoading(false);
+      history.push("/events");
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
+  };
+
+  //   Fetch Edit Data
+  const fetchEditEventData = async () => {
+    try {
+      setIsLoading(true);
+      const { data, status } = await axios.get(
+        `${baseURL}/event/event-info/${id}`
+      );
+
+      if (status === 200) {
+        const {
+          eventDescription,
+          eventImage,
+          eventTitle,
+          eventSchedule,
+          course,
+        } = data.event;
+
+        // Course
+        if (course.length > 0) {
+          setType(false);
+
+          const courseOption = course.map((item) => {
+            return {
+              value: item.course._id,
+              label: `${item.course.courseName} (${item.course.courseAbbreviation})`,
+            };
+          });
+
+          setSelectedCourses(courseOption);
+        }
+
+        // Image
+        const editImages = eventImage.map((image, idx) => {
+          if (idx === 0) {
+            return {
+              ...image,
+              img: image.url,
+              active: true,
+              status: "old",
+            };
+          }
+          return {
+            ...image,
+            img: image.url,
+            active: true,
+            status: "old",
+          };
+        });
+        setImages(editImages);
+
+        // Description
+        const html = eventDescription;
+        const contentBlock = htmlToDraft(html);
+        if (contentBlock) {
+          const contentState = ContentState.createFromBlockArray(
+            contentBlock.contentBlocks
+          );
+          const editorState = EditorState.createWithContent(contentState);
+          setEditorState(editorState);
+        }
+
+        // Event Title
+        setEventData({
+          ...eventData,
+          eventTitle: eventTitle,
+        });
+
+        // Event Schedule
+        setSelectedDate(new Date(eventSchedule));
+
+        // console.log(eventDescription, eventImage, eventTitle, date);
+
+        // //   Description
+        // console.log(data.event.eventDescription);
+        // // Event Images
+        // console.log(data.event.eventDescription.eventImage);
+        // // Event Images
+        // console.log(data.event.eventDescription.eventTitle);
+        // // Event Date
+        // console.log(data.event.eventDescription.date);
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+        return;
+      }
     } catch (error) {
       console.log(error);
       setIsLoading(false);
@@ -209,6 +367,10 @@ const CreateEvent = () => {
     fetchCourse();
   }, []);
 
+  useEffect(() => {
+    fetchEditEventData();
+  }, []);
+
   return (
     <>
       {isLoading ? (
@@ -218,13 +380,13 @@ const CreateEvent = () => {
       ) : (
         <>
           <Card className={classes.root} variant="outlined">
-            <h2 align="center"> Add Event </h2>
+            <h2 align="center"> Edit Event </h2>
             <TextField
               onChange={handleOnChange}
               label="Event Title"
               variant="outlined"
               name="eventTitle"
-              // value={eventData.eventTitle}
+              value={eventData.eventTitle}
               fullWidth
               required
             />
@@ -251,6 +413,7 @@ const CreateEvent = () => {
                 onChange={(val) => {
                   setSelectedCourses(val);
                 }}
+                value={selectedCourse}
                 // name="selectedCourse"
                 placeholder="Courses' event"
                 className={classes.selectedCourse}
@@ -276,7 +439,12 @@ const CreateEvent = () => {
 
             <Grid container spacing={3}>
               <Grid item sm={4} xs={12}>
-                <ImageGallery images={images} setImages={setImages} />
+                <UpdateGallery
+                  images={images}
+                  setImages={setImages}
+                  setAddingUpdateImages={setAddingUpdateImages}
+                  handlingRemove={handlingRemove}
+                />
               </Grid>
 
               <Grid item sm={8} xs={12}>
@@ -305,4 +473,4 @@ const CreateEvent = () => {
   );
 };
 
-export default CreateEvent;
+export default UpdateEvent;

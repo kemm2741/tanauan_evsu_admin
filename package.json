@@ -23,10 +23,13 @@
     "react-dom": "^17.0.1",
     "react-draft-wysiwyg": "^1.14.7",
     "react-icons": "^4.2.0",
+    "react-images": "^1.2.0-beta.7",
+    "react-material-ui-carousel": "^2.3.8",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.2",
     "react-select": "^5.2.1",
     "recharts": "^2.1.2",
+    "shortid": "^2.2.16",
     "sweetalert2": "^11.1.4",
     "web-vitals": "^1.1.0"
   },

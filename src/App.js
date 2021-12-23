@@ -24,6 +24,8 @@ import Profile from "./pages/Profile";
 
 // Create Pages
 import CreateEvent from "./pages/CreateEvent";
+import UpdateEvent from "./pages/UpdateEvent";
+
 import CreateJob from "./pages/CreateJob";
 
 // 404 Page Not Found
@@ -69,64 +71,56 @@ function App() {
             <PrivateRoute exact path="/">
               <Dashboard />
             </PrivateRoute>
-
             <PrivateRoute exact path="/dashboard">
               <Dashboard />
             </PrivateRoute>
-
             <PrivateRoute path="/alumni">
               <Alumnis />
             </PrivateRoute>
-
             <PrivateRoute path="/courses">
               <Courses />
             </PrivateRoute>
-
             <Route path="/archieve-course">
               <ArchieveCourse />
             </Route>
-
             <PrivateRoute path="/admin">
               <Admin />
-            </PrivateRoute>
-
-            <PrivateRoute path="/events">
-              <Events />
-            </PrivateRoute>
-
-            <PrivateRoute path="/jobs">
-              <Jobs />
             </PrivateRoute>
 
             <PrivateRoute path="/user">
               <User />
             </PrivateRoute>
-
             <PrivateRoute path="/subscriber">
               <Subscribers />
             </PrivateRoute>
-
             <PrivateRoute path="/profile">
               <Profile />
             </PrivateRoute>
-
             <PrivateRoute path="/logs">
               <Logs />
             </PrivateRoute>
-
+            {/* Events */}
             <PrivateRoute path="/createEvent">
               <CreateEvent />
             </PrivateRoute>
+            <PrivateRoute path="/events">
+              <Events />
+            </PrivateRoute>
+            <PrivateRoute path="/event-edit/:id">
+              <UpdateEvent />
+            </PrivateRoute>
 
+            {/* Job */}
             <PrivateRoute path="/createJob">
               <CreateJob />
             </PrivateRoute>
-
+            <PrivateRoute path="/jobs">
+              <Jobs />
+            </PrivateRoute>
             {/* Not Protected Routes  */}
             <Route exact path="/login">
               <Login />
             </Route>
-
             {/* 404 Page Not Found */}
             <PrivateRoute exact path="*">
               <NotFound />

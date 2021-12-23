@@ -141,7 +141,7 @@ const Login = () => {
   useEffect(() => {
     if (isAuthenticatedLogin) {
       // Swal.fire("Success Login", "Welcome to EVSU Alumni Tracer", "success");
-      history.push("/");
+      history.push("/dashboard");
     }
   }, [isAuthenticatedLogin]);
 

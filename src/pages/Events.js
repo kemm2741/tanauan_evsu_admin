@@ -23,9 +23,19 @@ import axios from "axios";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 
+import { Paper, Button } from "@material-ui/core";
+
+// Import image grid
+import Carousel from "react-material-ui-carousel";
+
 const useStyles = makeStyles((theme) => ({
   lineChartDesign: {
     margin: theme.spacing(3),
+  },
+  paper: {
+    width: "170px",
+    height: "150px",
+    backgroundColor: "red",
   },
 }));
 
@@ -37,55 +47,44 @@ const Events = () => {
     {
       title: " Event Title",
       field: "eventTitle",
-      width: "20%",
+      // width: "20%",
     },
     {
       title: "Event Image",
       field: "eventImage",
       editable: false,
-      width: "15%",
+      // width: "20%",
       render: (rowData) => {
+        const images = rowData.eventImage.map((image) => image.url);
+
+        console.log(images);
+
         return (
-          <img
-            src={
-              rowData.eventImage
-                ? rowData.eventImage
-                : "https://thumbs.dreamstime.com/b/no-image-available-icon-flat-vector-no-image-available-icon-flat-vector-illustration-132482953.jpg"
-            }
-            style={{
-              width: 100,
-              height: 100,
-              borderRadius: "50%",
-              objectFit: "cover",
-            }}
-          />
+          // <img
+          //   src={
+          //     rowData.eventImage
+          //       ? rowData.eventImage
+          //       : "https://thumbs.dreamstime.com/b/no-image-available-icon-flat-vector-no-image-available-icon-flat-vector-illustration-132482953.jpg"
+          //   }
+          //   style={{
+          //     width: 100,
+          //     height: 100,
+          //     borderRadius: "50%",
+          //     objectFit: "cover",
+          //   }}
+          // />
+          <Carousel>
+            {images.map((item, i) => (
+              <Item key={i} item={item} />
+            ))}
+          </Carousel>
         );
       },
     },
     {
-      title: "Event Description",
-      field: "eventDescription",
-      width: "50%",
-      filtering: false,
-      editComponent: (props) => (
-        <TextField
-          placeholder="Event Description"
-          type="text"
-          value={props.value ? props.value : ""}
-          onChange={(e) => {
-            props.onChange(e.target.value);
-          }}
-          variant="outlined"
-          multiline
-          fullWidth
-          rows={7}
-        />
-      ),
-    },
-    {
       title: "Event Schedule",
       field: "eventSchedule",
-      width: "15%",
+      // width: "10%",
       type: "date",
       dateSetting: {
         format: "dd/MM/yyyy",
@@ -99,7 +98,7 @@ const Events = () => {
     {
       title: "Date Posted",
       field: "date",
-      width: "15%",
+      // width: "15%",
       editable: false,
       type: "date",
       dateSetting: {
@@ -171,6 +170,16 @@ const Events = () => {
           actionsColumnIndex: -1,
           addRowPosition: "first",
         }}
+        actions={[
+          {
+            icon: "edit",
+            tooltip: "Edit Event",
+            onClick: (event, rowData) => {
+              // Do save operation
+              history.push(`/event-edit/${rowData._id}`);
+            },
+          },
+        ]}
         editable={{
           // onRowAdd: (newData) =>
           //   new Promise((resolve, reject) => {
@@ -197,24 +206,24 @@ const Events = () => {
           //         resolve();
           //       });
           //   }),
-          onRowUpdate: (newData, oldData) =>
-            new Promise((resolve, reject) => {
-              axios
-                .put(`${baseURL}/event/${oldData._id}`, newData)
-                .then(() => {
-                  fetchEvents();
-                  Swal.fire(
-                    "Success",
-                    "Event was updated successfully",
-                    "success"
-                  );
-                  resolve();
-                })
-                .catch((error) => {
-                  console.log(error);
-                  resolve();
-                });
-            }),
+          // onRowUpdate: (newData, oldData) =>
+          //   new Promise((resolve, reject) => {
+          //     axios
+          //       .put(`${baseURL}/event/${oldData._id}`, newData)
+          //       .then(() => {
+          //         fetchEvents();
+          //         Swal.fire(
+          //           "Success",
+          //           "Event was updated successfully",
+          //           "success"
+          //         );
+          //         resolve();
+          //       })
+          //       .catch((error) => {
+          //         console.log(error);
+          //         resolve();
+          //       });
+          //   }),
           onRowDelete: (oldData) =>
             new Promise((resolve, reject) => {
               axios
@@ -234,5 +243,21 @@ const Events = () => {
     </div>
   );
 };
+
+function Item(props) {
+  const classes = useStyles();
+  return (
+    <Paper className={classes.paper}>
+      <img
+        style={{ width: "100%", height: "100%" }}
+        src={props.item}
+        alt={props.item}
+      />
+      {/* <h2>{props.item.name}</h2>
+      <p>{props.item.description}</p> */}
+      {/* <Button className="CheckButton">Check it out!</Button> */}
+    </Paper>
+  );
+}
 
 export default Events;
