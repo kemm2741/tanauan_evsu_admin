@@ -27,14 +27,6 @@ import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-// Material UI Date Picker
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker,
-} from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
-
 // Import react select
 import Select from "react-select";
 
@@ -74,19 +66,18 @@ const useStyles = makeStyles({
   },
 });
 
-const UpdateEvent = () => {
+const UpdateJob = () => {
   const classes = useStyles();
   const { id } = useParams();
-
   const history = useHistory();
 
   const intialState = {
-    eventTitle: "",
-    eventDescription: "",
+    jobTitle: "",
+    jobCompany: " ",
   };
 
   const [editorState, setEditorState] = useState(null);
-  const [eventData, setEventData] = useState(intialState);
+  const [jobData, setJobData] = useState(intialState);
 
   // Couse options
   const [options, setOptions] = useState([]);
@@ -100,8 +91,8 @@ const UpdateEvent = () => {
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
-    setEventData({
-      ...eventData,
+    setJobData({
+      ...jobData,
       [name]: value,
     });
   };
@@ -120,12 +111,6 @@ const UpdateEvent = () => {
     } catch (error) {
       console.log(error);
     }
-  };
-
-  //   Date Functions
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
   };
 
   // Image Upload Change
@@ -163,8 +148,8 @@ const UpdateEvent = () => {
       return;
     }
 
-    const res = await axios.post(`${baseURL}/event/event-deleting-image/`, {
-      eventId: id,
+    const res = await axios.post(`${baseURL}/job/job-deleting-image/`, {
+      jobId: id,
       imageId: _id,
       cloudinary_id: item.cloudinary_id,
     });
@@ -214,7 +199,7 @@ const UpdateEvent = () => {
   };
 
   // Submit Event
-  const submitEvent = async () => {
+  const submitJob = async () => {
     const form = new FormData();
 
     const description = editorState
@@ -227,16 +212,16 @@ const UpdateEvent = () => {
       };
     });
 
-    if (selectedDate === " ") {
-      return Swal.fire("error", "Date must not be empty", "error");
+    if (jobData.jobTitle === " ") {
+      return Swal.fire("error", "Title must not be empty", "error");
     }
 
-    if (eventData.eventTitle === " ") {
-      return Swal.fire("error", "Title must not be empty", "error");
+    if (jobData.jobCompany === " ") {
+      return Swal.fire("error", "Company must not be empty", "error");
     }
 
     if (description === " ") {
-      return Swal.fire("error", "Title must not be empty", "error");
+      return Swal.fire("error", "Description must not be empty", "error");
     }
 
     if (!type) {
@@ -245,9 +230,9 @@ const UpdateEvent = () => {
       }
     }
 
-    form.append("eventSchedule", selectedDate);
-    form.append("eventTitle", eventData.eventTitle);
-    form.append("eventDescription", description);
+    form.append("jobTitle", jobData.jobTitle);
+    form.append("jobCompany", jobData.jobCompany);
+    form.append("jobDescription", description);
     form.append("type", type);
     form.append("course", JSON.stringify(course));
 
@@ -257,10 +242,10 @@ const UpdateEvent = () => {
 
     try {
       setIsLoading(true);
-      const { data } = await axios.put(`${baseURL}/event/${id}`, form);
+      const { data } = await axios.put(`${baseURL}/job/${id}`, form);
       console.log(data);
       setIsLoading(false);
-      history.push("/events");
+      history.push("/jobs");
     } catch (error) {
       console.log(error);
       setIsLoading(false);
@@ -268,21 +253,14 @@ const UpdateEvent = () => {
   };
 
   //   Fetch Edit Data
-  const fetchEditEventData = async () => {
+  const fetchEditJobData = async () => {
     try {
       setIsLoading(true);
-      const { data, status } = await axios.get(
-        `${baseURL}/event/event-info/${id}`
-      );
+      const { data, status } = await axios.get(`${baseURL}/job/job-info/${id}`);
 
       if (status === 200) {
-        const {
-          eventDescription,
-          eventImage,
-          eventTitle,
-          eventSchedule,
-          course,
-        } = data.event;
+        const { jobTitle, jobCompany, jobDescription, jobImage, course } =
+          data.job;
 
         // Course
         if (course.length > 0) {
@@ -299,7 +277,7 @@ const UpdateEvent = () => {
         }
 
         // Image
-        const editImages = eventImage.map((image, idx) => {
+        const editImages = jobImage.map((image, idx) => {
           if (idx === 0) {
             return {
               ...image,
@@ -318,7 +296,7 @@ const UpdateEvent = () => {
         setImages(editImages);
 
         // Description
-        const html = eventDescription;
+        const html = jobDescription;
         const contentBlock = htmlToDraft(html);
         if (contentBlock) {
           const contentState = ContentState.createFromBlockArray(
@@ -329,24 +307,12 @@ const UpdateEvent = () => {
         }
 
         // Event Title
-        setEventData({
-          ...eventData,
-          eventTitle: eventTitle,
+        setJobData({
+          ...jobData,
+          jobTitle: jobTitle,
+          jobCompany: jobCompany,
         });
 
-        // Event Schedule
-        setSelectedDate(new Date(eventSchedule));
-
-        // console.log(eventDescription, eventImage, eventTitle, date);
-
-        // //   Description
-        // console.log(data.event.eventDescription);
-        // // Event Images
-        // console.log(data.event.eventDescription.eventImage);
-        // // Event Images
-        // console.log(data.event.eventDescription.eventTitle);
-        // // Event Date
-        // console.log(data.event.eventDescription.date);
         setIsLoading(false);
       } else {
         setIsLoading(false);
@@ -369,7 +335,7 @@ const UpdateEvent = () => {
   }, []);
 
   useEffect(() => {
-    fetchEditEventData();
+    fetchEditJobData();
   }, []);
 
   return (
@@ -381,13 +347,24 @@ const UpdateEvent = () => {
       ) : (
         <>
           <Card className={classes.root} variant="outlined">
-            <h2 align="center"> Edit Event </h2>
+            <h2 align="center"> Edit Job </h2>
             <TextField
               onChange={handleOnChange}
-              label="Event Title"
+              label="Job Title"
               variant="outlined"
-              name="eventTitle"
-              value={eventData.eventTitle}
+              name="jobTitle"
+              value={jobData.jobTitle}
+              fullWidth
+              required
+            />
+
+            <TextField
+              className={classes.field}
+              onChange={handleOnChange}
+              label="Job Company"
+              variant="outlined"
+              name="jobCompany"
+              value={jobData.jobCompany}
               fullWidth
               required
             />
@@ -422,22 +399,6 @@ const UpdateEvent = () => {
               />
             ) : null}
 
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <KeyboardDatePicker
-                className={classes.field}
-                disablePast
-                margin="normal"
-                label="Event Schedule"
-                format="MM/dd/yyyy"
-                value={selectedDate}
-                onChange={handleDateChange}
-                KeyboardButtonProps={{
-                  "aria-label": "change date",
-                }}
-                variant="outlined"
-              />
-            </MuiPickersUtilsProvider>
-
             <Grid container spacing={3}>
               <Grid item sm={4} xs={12}>
                 <UpdateGallery
@@ -458,7 +419,7 @@ const UpdateEvent = () => {
 
             <Button
               onClick={() => {
-                submitEvent();
+                submitJob();
               }}
               className={classes.submitButton}
               size="medium"
@@ -474,4 +435,4 @@ const UpdateEvent = () => {
   );
 };
 
-export default UpdateEvent;
+export default UpdateJob;

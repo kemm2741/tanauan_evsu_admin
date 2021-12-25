@@ -27,6 +27,7 @@ import CreateEvent from "./pages/CreateEvent";
 import UpdateEvent from "./pages/UpdateEvent";
 
 import CreateJob from "./pages/CreateJob";
+import UpdateJob from "./pages/UpdateJob";
 
 // 404 Page Not Found
 import NotFound from "./pages/NotFound";
@@ -116,6 +117,9 @@ function App() {
             </PrivateRoute>
             <PrivateRoute path="/jobs">
               <Jobs />
+            </PrivateRoute>
+            <PrivateRoute path="/job-edit/:id">
+              <UpdateJob />
             </PrivateRoute>
             {/* Not Protected Routes  */}
             <Route exact path="/login">

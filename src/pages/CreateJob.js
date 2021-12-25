@@ -1,84 +1,92 @@
+// ?
 import React, { useState, useEffect } from "react";
+import { Editor } from "react-draft-wysiwyg";
+import { EditorState, convertToRaw, ContentState } from "draft-js";
+import draftToHtml from "draftjs-to-html";
+import htmlToDraft from "html-to-draftjs";
 
-// !Base URL
+// React Router DOM
+import { useHistory } from "react-router-dom";
+
+import Swal from "sweetalert2";
+
+//! Base URL;
 import { baseURL } from "../utils/baseURL";
+
+// Base 64
+import base64 from "../utils/base64";
+import ImageGallery from "../utils/ImageGallery";
+
+// Material UI
+import { makeStyles } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
+import Card from "@material-ui/core/Card";
+import MenuItem from "@material-ui/core/MenuItem";
+import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
+import CircularProgress from "@material-ui/core/CircularProgress";
+
+// Import react select
+import Select from "react-select";
 
 // Import axios
 import axios from "axios";
 
-// Material UI Date Picker
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker,
-} from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
-
-// React Router
-import { useHistory } from "react-router-dom";
-
-// Material UI
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
-import Container from "@material-ui/core/Container";
-import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
-import { makeStyles } from "@material-ui/core";
-import TextField from "@material-ui/core/TextField";
-import CircularProgress from "@material-ui/core/CircularProgress";
-
-// Sweet Alert
-import Swal from "sweetalert2";
-
 const useStyles = makeStyles({
+  root: {
+    minWidth: 275,
+    padding: "20px 10px",
+    minHeight: 700,
+  },
+  title: {
+    fontSize: 14,
+  },
   field: {
-    marginTop: 20,
-    marginBottom: 20,
-    display: "block",
+    marginTop: "15px",
+    marginBottom: "15px",
+  },
+  selectedCourse: {
+    marginBottom: "15px",
+  },
+  submitButton: {
+    marginTop: "30px",
+    marginLeft: "5px",
+  },
+  editorContainer: {
+    border: "1px #111 solid",
+    width: "100%",
   },
   circularContainer: {
-    height: "30vh",
-    marginTop: 20,
     width: "100%",
+    height: "30vh",
     display: "flex",
-    justifyContent: "center",
     alignItems: "center",
-    marginInline: "auto",
+    justifyContent: "center",
   },
 });
 
-export default function CreateJob() {
+const CreateJob = () => {
   const classes = useStyles();
   const history = useHistory();
 
-  //   Initial State
   const intialState = {
     jobTitle: "",
     jobCompany: "",
-    jobDescription: "",
   };
 
-  //   Main Data
+  const [editorState, setEditorState] = useState(null);
   const [jobData, setJobData] = useState(intialState);
+
+  // Couse options
+  const [options, setOptions] = useState([]);
+
+  // Loading State
   const [isLoading, setIsLoading] = useState(false);
-  //  Subscribe Emails
-  const [subscriberEmails, setSubscriberEmails] = useState([]);
 
-  //   Date Functions
-  const [selectedDate, setSelectedDate] = useState(
-    new Date("2014-08-18T21:11:54")
-  );
+  // Selected Courses
+  const [selectedCourse, setSelectedCourses] = useState(null);
+  const [type, setType] = useState(true);
 
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-  };
-
-  //   Image Functions
-  const [jobImage, setJobImage] = useState("");
-  const handleImageChange = (e) => {
-    setJobImage(e.target.files[0]);
-  };
-
-  //  Handle Onchange
   const handleOnChange = (e) => {
     const { name, value } = e.target;
     setJobData({
@@ -87,176 +95,207 @@ export default function CreateJob() {
     });
   };
 
-  //   Create Job Fucntion
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Fetch Course
+  const fetchCourse = async () => {
+    try {
+      const { data } = await axios.get(`${baseURL}/course`);
+      const courseOption = data.map((course) => {
+        return {
+          value: course._id,
+          label: `${course.courseName} (${course.courseAbbreviation})`,
+        };
+      });
+      setOptions(courseOption);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-    if (jobData.jobTitle === "") {
-      return Swal.fire("Error", "Please enter valid Job Title", "error");
+  // Image Upload Change
+  const [images, setImages] = useState([]);
+
+  const handleImageChange = (e) => {
+    const { files } = e.target;
+    for (let file of files) {
+      setImages([...images, { file, based: base64(file) }]);
+    }
+  };
+
+  // Rich Text
+  const settingUpRichText = () => {
+    const html = "<span></span>";
+    const contentBlock = htmlToDraft(html);
+    if (contentBlock) {
+      const contentState = ContentState.createFromBlockArray(
+        contentBlock.contentBlocks
+      );
+      const editorState = EditorState.createWithContent(contentState);
+      setEditorState(editorState);
+    }
+  };
+
+  // Submit Event
+  const submitJob = async () => {
+    const form = new FormData();
+
+    const description = editorState
+      ? draftToHtml(convertToRaw(editorState.getCurrentContent()))
+      : "<span></span>";
+
+    const course = selectedCourse.map((data) => data.value);
+
+    if (jobData.jobTitle === " ") {
+      return Swal.fire("error", "Title must not be empty", "error");
     }
 
-    if (jobData.jobDescription === "") {
-      return Swal.fire("Error", "Please enter valid Job description", "error");
+    if (jobData.jobCompany === " ") {
+      return Swal.fire("error", "Job Company must not be empty", "error");
     }
 
-    // if (selectedDate === "") {
-    //   return Swal.fire("Error", "Please enter valid Job date", "error");
-    // }
-
-    if (jobImage === "") {
-      return Swal.fire("Error", "Please enter valid job image", "error");
+    if (description === " ") {
+      return Swal.fire("error", "Description must not be empty", "error");
     }
 
-    const formData = new FormData();
-    formData.append("file", jobImage);
-    formData.append("upload_preset", "iyvxqf5y");
+    if (!type) {
+      if (course.length < 1) {
+        return Swal.fire("error", "Please select a course", "error");
+      }
+    }
 
-    // Delete Auth Token From Header
-    delete axios.defaults.headers.common["auth-token"];
+    if (images.length < 1) {
+      return Swal.fire("error", "Image is required at least 1", "error");
+    }
+
+    form.append("jobTitle", jobData.jobTitle);
+    form.append("jobCompany", jobData.jobCompany);
+    form.append("jobDescription", description);
+    form.append("type", type);
+    form.append("course", JSON.stringify(course));
+
+    for (let image of images) {
+      form.append("images", image.file);
+    }
+
+    // console.log(
+    //   `Job Title ${jobData.jobTitle}`,
+    //   `Job Company ${jobData.jobCompany}`,
+    //   `Job Description ${description}`,
+    //   `Type ${type}`,
+    //   `Course ${course}`
+    // );
+
     try {
       setIsLoading(true);
-      const { data } = await axios.post(
-        "https://api.cloudinary.com/v1_1/dcbmrwiu6/image/upload",
-        formData
-      );
+      const { data } = await axios.post(`${baseURL}/job`, form);
+      console.log(data);
 
-      const emails = subscriberEmails.map((a) => a.subscriberEmail);
-
-      axios
-        .post(`${baseURL}/job`, {
-          jobTitle: jobData.jobTitle,
-          jobCompany: jobData.jobCompany,
-          jobDescription: jobData.jobDescription,
-          jobImage: data.url,
-          emails,
-        })
-        .then(() => {
-          Swal.fire("Success", "New Job Added", "success");
-          history.push("/jobs");
-          setIsLoading(false);
-        })
-        .catch((error) => {
-          console.log(error);
-          Swal.fire("Error", `${error.response.data.msg}`, "error");
-          setIsLoading(false);
-        });
-    } catch (error) {
-      console.log(error);
+      history.push("/jobs");
       setIsLoading(false);
-    }
-    // Bring Back Auth Token From Header
-    axios.defaults.headers.common["auth-token"] = localStorage.getItem("token");
-  };
-
-  // fetch Emails
-  const fetchSubscriber = async () => {
-    try {
-      const { data } = await axios.get(`${baseURL}/subscribe`);
-      setSubscriberEmails(data);
     } catch (error) {
       console.log(error);
       setIsLoading(false);
     }
   };
 
+  // Rich Text Use Effect
   useEffect(() => {
-    fetchSubscriber();
+    settingUpRichText();
+  }, []);
+
+  // Courses Use Effect
+  useEffect(() => {
+    fetchCourse();
   }, []);
 
   return (
-    <Container size="sm">
+    <>
       {isLoading ? (
         <div className={classes.circularContainer}>
           <CircularProgress />
         </div>
       ) : (
         <>
-          <Typography variant="h5" component="h1" gutterBottom>
-            Post New Job
-          </Typography>
-          <form noValidate autoComplete="off" onSubmit={handleSubmit}>
+          <Card className={classes.root} variant="outlined">
+            <h2 align="center"> Post Job </h2>
             <TextField
-              className={classes.field}
               onChange={handleOnChange}
               label="Job Title"
               variant="outlined"
               name="jobTitle"
-              value={jobData.jobTitle}
+              value={jobData.eventTitle}
               fullWidth
               required
             />
 
             <TextField
-              className={classes.field}
               onChange={handleOnChange}
-              label="Job Company Name"
+              label="Job Company"
               variant="outlined"
               name="jobCompany"
+              className={classes.field}
               value={jobData.jobCompany}
               fullWidth
               required
             />
 
             <TextField
+              value={type}
+              onChange={(e) => {
+                setType(e.target.value);
+              }}
+              name="sendDetails"
               className={classes.field}
-              onChange={handleOnChange}
-              label="Job Description"
+              label="Courses"
               variant="outlined"
-              name="jobDescription"
-              value={jobData.jobDescription}
               fullWidth
-              required
-              multiline
-              rows={4}
-            />
+              select
+            >
+              <MenuItem value={true}>Sent To All</MenuItem>
+              <MenuItem value={false}> Selected Send </MenuItem>
+            </TextField>
 
-            {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <KeyboardDatePicker
-                className={classes.field}
-                margin="normal"
-                label="Event Schedule"
-                format="MM/dd/yyyy"
-                value={selectedDate}
-                onChange={handleDateChange}
-                KeyboardButtonProps={{
-                  "aria-label": "change date",
+            {!type ? (
+              <Select
+                isMulti
+                onChange={(val) => {
+                  setSelectedCourses(val);
                 }}
-                variant="outlined"
+                // name="selectedCourse"
+                placeholder="Courses' event"
+                className={classes.selectedCourse}
+                options={options}
               />
-            </MuiPickersUtilsProvider> */}
+            ) : null}
 
-            <div className={classes.field}>
-              <label htmlFor="contained-button-file">
-                <Button
-                  style={{ marginRight: "10px" }}
-                  variant="contained"
-                  color="primary"
-                  component="span"
-                >
-                  Upload Image
-                </Button>
-              </label>
-              <input
-                accept="image/png, image/gif, image/jpeg"
-                className={classes.input}
-                id="contained-button-file"
-                multiple
-                onChange={handleImageChange}
-                type="file"
-              />
-            </div>
+            <Grid container spacing={3}>
+              <Grid item sm={4} xs={12}>
+                <ImageGallery images={images} setImages={setImages} />
+              </Grid>
+
+              <Grid item sm={8} xs={12}>
+                <Editor
+                  editorState={editorState}
+                  onEditorStateChange={(content) => setEditorState(content)}
+                />
+              </Grid>
+            </Grid>
 
             <Button
-              type="submit"
-              color="primary"
+              onClick={() => {
+                submitJob();
+              }}
+              className={classes.submitButton}
+              size="medium"
               variant="contained"
-              endIcon={<KeyboardArrowRightIcon />}
+              color="primary"
             >
               Submit
             </Button>
-          </form>
+          </Card>
         </>
       )}
-    </Container>
+    </>
   );
-}
+};
+
+export default CreateJob;

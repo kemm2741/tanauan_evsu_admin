@@ -16,67 +16,57 @@ import axios from "axios";
 
 // Material UI
 import Typography from "@material-ui/core/Typography";
-import TextField from "@material-ui/core/TextField";
 
 // Import matarial table
 import MaterialTable from "material-table";
+import { makeStyles } from "@material-ui/core/styles";
+import { Paper } from "@material-ui/core";
+
+// Image grid
+import Carousel from "react-material-ui-carousel";
+
+const useStyles = makeStyles((theme) => ({
+  lineChartDesign: {
+    margin: theme.spacing(3),
+  },
+  paper: {
+    width: "170px",
+    height: "150px",
+    display: "block",
+    marginInline: "auto",
+  },
+  carouselImage: {
+    objectFit: "cover",
+  },
+}));
 
 const Jobs = () => {
+  const classes = useStyles();
   const history = useHistory();
   const [data, setData] = useState();
-  const [subscriberEmails, setSubscriberEmails] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [columns, setColumns] = useState([
-    { title: "Title ", field: "jobTitle", width: "10%" },
-    { title: "Company", field: "jobCompany", width: "15%" },
+    { title: "Job Title", field: "jobTitle" },
+    { title: "Company Name", field: "jobCompany" },
     {
-      title: "Description",
-      field: "jobDescription",
-      width: "50%",
-      filtering: false,
-      editComponent: (props) => (
-        <TextField
-          placeholder="Event Description"
-          type="text"
-          value={props.value ? props.value : ""}
-          onChange={(e) => {
-            props.onChange(e.target.value);
-          }}
-          variant="outlined"
-          multiline
-          fullWidth
-          rows={7}
-        />
-      ),
-    },
-    {
-      title: "Job Image",
+      title: "Job Images",
       field: "jobImage",
-      width: "15%",
       editable: false,
       filtering: false,
       render: (rowData) => {
+        const images = rowData.jobImage.map((image) => image.url);
         return (
-          <img
-            src={
-              rowData.jobImage
-                ? rowData.jobImage
-                : "https://thumbs.dreamstime.com/b/no-image-available-icon-flat-vector-no-image-available-icon-flat-vector-illustration-132482953.jpg"
-            }
-            style={{
-              width: 100,
-              height: 100,
-              borderRadius: "50%",
-              objectFit: "contain",
-            }}
-          />
+          <Carousel>
+            {images.map((item, i) => (
+              <Item key={i} item={item} />
+            ))}
+          </Carousel>
         );
       },
     },
     {
       title: "Date Posted",
       field: "date",
-      width: "10%",
       editable: false,
       type: "date",
       dateSetting: {
@@ -92,23 +82,9 @@ const Jobs = () => {
   const fetchJobs = async () => {
     try {
       setIsLoading(true);
-      // Jobs Data
       const { data } = await axios.get(`${baseURL}/job`);
       setData(data);
-      // Fetch subscribe emails data
-      fetchSubscriber();
       setIsLoading(false);
-    } catch (error) {
-      console.log(error);
-      setIsLoading(false);
-    }
-  };
-
-  // fetch Emails
-  const fetchSubscriber = async () => {
-    try {
-      const { data } = await axios.get(`${baseURL}/subscribe`);
-      setSubscriberEmails(data);
     } catch (error) {
       console.log(error);
       setIsLoading(false);
@@ -129,9 +105,16 @@ const Jobs = () => {
         actions={[
           {
             icon: "add",
-            tooltip: "Add User",
+            tooltip: "Post a new job",
             isFreeAction: true,
             onClick: (event) => history.push("/createJob"),
+          },
+          {
+            icon: "edit",
+            tooltip: "Edit Event",
+            onClick: (event, rowData) => {
+              history.push(`/job-edit/${rowData._id}`);
+            },
           },
         ]}
         options={{
@@ -143,41 +126,6 @@ const Jobs = () => {
           addRowPosition: "first",
         }}
         editable={{
-          // onRowAdd: (newData) =>
-          //   new Promise((resolve, reject) => {
-          //     const { jobTitle, jobCompany, jobDescription } = newData;
-          //     const emails = subscriberEmails.map((a) => a.subscriberEmail);
-          //     axios
-          //       .post(`${baseURL}/job`, {
-          //         jobTitle,
-          //         jobCompany,
-          //         jobDescription,
-          //         emails,
-          //       })
-          //       .then(() => {
-          //         fetchJobs();
-          //         Swal.fire("Success", "New Job Posted", "success");
-          //         resolve();
-          //       })
-          //       .catch((error) => {
-          //         console.log(error);
-          //         resolve();
-          //       });
-          //   }),
-          onRowUpdate: (newData, oldData) =>
-            new Promise((resolve, reject) => {
-              axios
-                .put(`${baseURL}/job/${oldData._id}`, newData)
-                .then(() => {
-                  fetchJobs();
-                  Swal.fire("Success", "Job was updated", "success");
-                  resolve();
-                })
-                .catch((error) => {
-                  console.log(error);
-                  resolve();
-                });
-            }),
           onRowDelete: (oldData) =>
             new Promise((resolve, reject) => {
               axios
@@ -197,5 +145,19 @@ const Jobs = () => {
     </div>
   );
 };
+
+function Item(props) {
+  const classes = useStyles();
+  return (
+    <Paper className={classes.paper}>
+      <img
+        className={classes.carouselImage}
+        style={{ width: "100%", height: "100%" }}
+        src={props.item}
+        alt={props.item}
+      />
+    </Paper>
+  );
+}
 
 export default Jobs;
