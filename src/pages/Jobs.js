@@ -16,9 +16,10 @@ import axios from "axios";
 
 // Material UI
 import Typography from "@material-ui/core/Typography";
+import Button from "@material-ui/core/Button";
 
 // Import matarial table
-import MaterialTable from "material-table";
+import MaterialTable, { MTableToolbar } from "material-table";
 import { makeStyles } from "@material-ui/core/styles";
 import { Paper } from "@material-ui/core";
 
@@ -37,6 +38,9 @@ const useStyles = makeStyles((theme) => ({
   },
   carouselImage: {
     objectFit: "cover",
+  },
+  chipButton: {
+    marginRight: "10px",
   },
 }));
 
@@ -102,6 +106,35 @@ const Jobs = () => {
         title="Posted Jobs"
         columns={columns}
         data={data}
+        components={{
+          Toolbar: (props) => (
+            <div>
+              <MTableToolbar {...props} />
+              <div style={{ padding: "0px 10px" }}>
+                <Button
+                  onClick={() => {
+                    history.push("/jobs");
+                  }}
+                  className={classes.chipButton}
+                  variant="contained"
+                  color="primary"
+                >
+                  Active Jobs
+                </Button>
+                <Button
+                  onClick={() => {
+                    history.push("/jobs/archieve-jobs");
+                  }}
+                  className={classes.chipButton}
+                  variant="contained"
+                  color="primary"
+                >
+                  Archieve Jobs
+                </Button>
+              </div>
+            </div>
+          ),
+        }}
         actions={[
           {
             icon: "add",
@@ -120,7 +153,7 @@ const Jobs = () => {
         options={{
           exportButton: true,
           filtering: true,
-          pageSize: 6,
+          pageSize: 7,
           toolbar: true,
           actionsColumnIndex: -1,
           addRowPosition: "first",
@@ -132,7 +165,7 @@ const Jobs = () => {
                 .delete(`${baseURL}/job/${oldData._id}`)
                 .then(() => {
                   fetchJobs();
-                  Swal.fire("Success", "Job was deleted", "success");
+                  Swal.fire("Success", "Job archieved", "success");
                   resolve();
                 })
                 .catch((error) => {

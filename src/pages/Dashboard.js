@@ -206,11 +206,12 @@ const Dashboard = () => {
       // setAlumniData(data);
 
       const workingUsers = data.filter((user) => {
-        return user.status === "employed";
+        return user.presentOccupation !== "none";
       });
       const notWorking = data.filter((user) => {
-        return user.status === "unemployed";
+        return user.presentOccupation === "none";
       });
+
       setEmployedUsers(workingUsers);
       setUnEmployedUsers(notWorking);
 
@@ -568,11 +569,11 @@ const Dashboard = () => {
               isLoading={alumniData.isLoading}
               title="Employed Graduates"
               columns={[
-                { title: "Name", field: "name" },
-                { title: "Middle Name", field: "middleName" },
-                { title: "Last Name", field: "lastName" },
-                { title: "Batch", field: "batch" },
-                { title: "Current Work", field: "currentWork" },
+                { title: "Name", field: "firstname" },
+                { title: "Middle Name", field: "middlename" },
+                { title: "Last Name", field: "lastname" },
+                { title: "Batch", field: "yearGraduated" },
+                { title: "Current Work", field: "presentOccupation" },
               ]}
               data={employedUsers}
             />
@@ -611,10 +612,11 @@ const Dashboard = () => {
               isLoading={alumniData.isLoading}
               title="Unemployed Graduates"
               columns={[
-                { title: "Name", field: "name" },
-                { title: "Middle Name", field: "middleName" },
-                { title: "Last Name", field: "lastName" },
-                { title: "Batch", field: "batch" },
+                { title: "Name", field: "firstname" },
+                { title: "Middle Name", field: "middlename" },
+                { title: "Last Name", field: "lastname" },
+                { title: "Batch", field: "yearGraduated" },
+                // { title: "Current Work", field: "currentWork" },
               ]}
               data={unEmployedUsers}
             />

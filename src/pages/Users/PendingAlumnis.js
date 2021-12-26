@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 
 // ! Import baseURL
-import { baseURL } from "../utils/baseURL";
+import { baseURL } from "../../utils/baseURL";
+
+import { useHistory } from "react-router-dom";
 
 import Swal from "sweetalert2";
 
-import { useHistory } from "react-router-dom";
+import { GrRevert } from "react-icons/gr";
 
 // Import Axios
 import axios from "axios";
@@ -80,9 +82,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Alumnis = () => {
+const PendingAlumnis = () => {
   const classes = useStyles();
-
   const history = useHistory();
 
   // Calcualte Age
@@ -177,7 +178,7 @@ const Alumnis = () => {
   const fetchUsers = async () => {
     try {
       setIsLoading(true);
-      const { data } = await axios.get(`${baseURL}/user`);
+      const { data } = await axios.get(`${baseURL}/user/pending-user`);
       const withAge = data.map((user) => {
         return {
           ...user,
@@ -259,12 +260,15 @@ const Alumnis = () => {
       </Modal>
 
       <MaterialTable
-        title="EVSU Active Alumnis"
+        title="EVSU Pending Alumnis"
         columns={columns}
         isLoading={isLoading}
         data={data}
         onRowClick={(event, rowData, togglePanel) => {
           handleOpenModal();
+
+          console.log(rowData);
+
           setAlumniData(rowData);
         }}
         components={{
@@ -296,6 +300,27 @@ const Alumnis = () => {
             </div>
           ),
         }}
+        actions={[
+          {
+            icon: () => <GrRevert size={24} />,
+            tooltip: "Active Course",
+            onClick: (event, rowData) => {
+              axios
+                .post(`${baseURL}/user/update-status-user`, {
+                  userId: rowData._id,
+                  status: "active",
+                })
+                .then(({ data }) => {
+                  fetchUsers();
+                  Swal.fire("Success", "Account is not active", "success");
+                })
+                .catch((err) => {
+                  fetchUsers();
+                  Swal.fire("Error", `${err.response.data.msg}`, "error");
+                });
+            },
+          },
+        ]}
         options={{
           exportButton: true,
           filtering: true,
@@ -304,9 +329,26 @@ const Alumnis = () => {
           actionsColumnIndex: -1,
           addRowPosition: "first",
         }}
+        editable={{
+          onRowDelete: (oldData) =>
+            new Promise((resolve, reject) => {
+              axios
+                .post(`${baseURL}/user/deleting-pending-request/`, {
+                  userId: oldData._id,
+                })
+                .then(({ data }) => {
+                  Swal.fire("Success", "User account deleted", "success");
+                  fetchUsers();
+                })
+                .catch((err) => {
+                  fetchUsers();
+                  Swal.fire("Error", `${err.response.data.msg}`, "error");
+                });
+            }),
+        }}
       />
     </div>
   );
 };
 
-export default Alumnis;
+export default PendingAlumnis;

@@ -12,11 +12,20 @@ import Layout from "./components/Layout";
 
 // Admin Pages
 import Dashboard from "./pages/Dashboard";
+
+// Alumnis
 import Alumnis from "./pages/Alumnis";
+import PendingAlumnis from "./pages/Users/PendingAlumnis";
+
+// Course
 import Courses from "./pages/Courses";
 import Admin from "./pages/Admin";
 import Events from "./pages/Events";
+
+// Jobs
 import Jobs from "./pages/Jobs";
+import ArchieveJobs from "./pages/Jobs/ArchieveJobs";
+
 import Logs from "./pages/Logs";
 import User from "./pages/User";
 import Subscribers from "./pages/Subscribers";
@@ -75,8 +84,12 @@ function App() {
             <PrivateRoute exact path="/dashboard">
               <Dashboard />
             </PrivateRoute>
-            <PrivateRoute path="/alumni">
+            {/* Alumnis */}
+            <PrivateRoute exact path="/alumni">
               <Alumnis />
+            </PrivateRoute>
+            <PrivateRoute exact path="/alumni/pending-user">
+              <PendingAlumnis />
             </PrivateRoute>
             <PrivateRoute path="/courses">
               <Courses />
@@ -87,7 +100,6 @@ function App() {
             <PrivateRoute path="/admin">
               <Admin />
             </PrivateRoute>
-
             <PrivateRoute path="/user">
               <User />
             </PrivateRoute>
@@ -110,13 +122,15 @@ function App() {
             <PrivateRoute path="/event-edit/:id">
               <UpdateEvent />
             </PrivateRoute>
-
             {/* Job */}
             <PrivateRoute path="/createJob">
               <CreateJob />
             </PrivateRoute>
-            <PrivateRoute path="/jobs">
+            <PrivateRoute exact path="/jobs">
               <Jobs />
+            </PrivateRoute>
+            <PrivateRoute path="/jobs/archieve-jobs">
+              <ArchieveJobs />
             </PrivateRoute>
             <PrivateRoute path="/job-edit/:id">
               <UpdateJob />

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 
-// React Router
-import { useHistory } from "react-router";
+import { useHistory } from "react-router-dom";
 
-// ! Base URL
-import { baseURL } from "../utils/baseURL";
+// ! Import Base URL
+import { baseURL } from "../../utils/baseURL";
 
 // Sweet Alert
 import Swal from "sweetalert2";
@@ -12,19 +11,22 @@ import Swal from "sweetalert2";
 // Momemnt
 import moment from "moment";
 
-// Import matarial table
-import MaterialTable, { MTableToolbar } from "material-table";
-import TextField from "@material-ui/core/TextField";
+// Icons
+import { GrRevert } from "react-icons/gr";
 
-// Import Axios
+// Import axios
 import axios from "axios";
 
 // Material UI
 import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
-import { Paper, Button } from "@material-ui/core";
+import Button from "@material-ui/core/Button";
 
-// Import image grid
+// Import matarial table
+import MaterialTable, { MTableToolbar } from "material-table";
+import { makeStyles } from "@material-ui/core/styles";
+import { Paper } from "@material-ui/core";
+
+// Image grid
 import Carousel from "react-material-ui-carousel";
 
 const useStyles = makeStyles((theme) => ({
@@ -45,23 +47,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Events = () => {
+const ArchieveJobs = () => {
   const classes = useStyles();
   const history = useHistory();
-
+  const [data, setData] = useState();
+  const [isLoading, setIsLoading] = useState(false);
   const [columns, setColumns] = useState([
+    { title: "Job Title", field: "jobTitle" },
+    { title: "Company Name", field: "jobCompany" },
     {
-      title: " Event Title",
-      field: "eventTitle",
-    },
-    {
-      title: "Event Image",
-      field: "eventImage",
+      title: "Job Images",
+      field: "jobImage",
       editable: false,
       filtering: false,
-
       render: (rowData) => {
-        const images = rowData.eventImage.map((image) => image.url);
+        const images = rowData.jobImage.map((image) => image.url);
         return (
           <Carousel>
             {images.map((item, i) => (
@@ -72,19 +72,6 @@ const Events = () => {
       },
     },
     {
-      title: "Event Schedule",
-      field: "eventSchedule",
-      type: "date",
-      dateSetting: {
-        format: "dd/MM/yyyy",
-      },
-      render: (rowData) => (
-        <Typography variant="p">
-          {moment(rowData.eventSchedule).format("LL")}
-        </Typography>
-      ),
-    },
-    {
       title: "Date Posted",
       field: "date",
       editable: false,
@@ -92,25 +79,21 @@ const Events = () => {
       dateSetting: {
         format: "dd/MM/yyyy",
       },
-      // render: (rowData) => (
-      //   <Typography variant="p">
-      //     {moment(rowData.date).format("llll")}
-      //   </Typography>
-      // ),
+      render: (rowData) => (
+        <Typography variant="p">{moment(rowData.date).format("LL")}</Typography>
+      ),
     },
   ]);
 
-  const [data, setData] = useState();
-  const [isLoading, setIsLoading] = useState(false);
-
-  // fetch Events
-  const fetchEvents = async () => {
+  // fetchJobs
+  const fetchJobs = async () => {
     try {
       setIsLoading(true);
-      const { data } = await axios.get(`${baseURL}/event`);
-      setData(data);
+      const { data } = await axios.get(`${baseURL}/job/archived-job-list`);
+
       console.log(data);
 
+      setData(data);
       setIsLoading(false);
     } catch (error) {
       console.log(error);
@@ -119,14 +102,14 @@ const Events = () => {
   };
 
   useEffect(() => {
-    fetchEvents();
+    fetchJobs();
   }, []);
 
   return (
     <div>
       <MaterialTable
         isLoading={isLoading}
-        title="Evsu Events"
+        title="Posted Jobs"
         columns={columns}
         data={data}
         components={{
@@ -136,23 +119,23 @@ const Events = () => {
               <div style={{ padding: "0px 10px" }}>
                 <Button
                   onClick={() => {
-                    // history.push("/jobs");
+                    history.push("/jobs");
                   }}
                   className={classes.chipButton}
                   variant="contained"
                   color="primary"
                 >
-                  Active Events
+                  Active Jobs
                 </Button>
                 <Button
                   onClick={() => {
-                    // history.push("/jobs/archieve-jobs");
+                    history.push("/jobs/archieve-jobs");
                   }}
                   className={classes.chipButton}
                   variant="contained"
                   color="primary"
                 >
-                  Archieve Events
+                  Archieve Jobs
                 </Button>
               </div>
             </div>
@@ -160,42 +143,43 @@ const Events = () => {
         }}
         actions={[
           {
-            icon: "add",
-            tooltip: "Add User",
-            isFreeAction: true,
-            onClick: (event) => history.push("/createEvent"),
-          },
-          {
-            icon: "edit",
-            tooltip: "Edit Event",
+            icon: () => <GrRevert size={24} />,
+            tooltip: "Archieve Course",
             onClick: (event, rowData) => {
-              history.push(`/event-edit/${rowData._id}`);
+              Swal.fire({
+                title: "Are you sure you want to activate this job?",
+                // text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes",
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  axios
+                    .post(`${baseURL}/job/update-job-status/`, {
+                      jobId: rowData._id,
+                    })
+                    .then(({ data }) => {
+                      console.log(data);
+                      fetchJobs();
+                    })
+                    .catch((err) => {
+                      console.log(err);
+                      fetchJobs();
+                    });
+                }
+              });
             },
           },
         ]}
         options={{
           exportButton: true,
           filtering: true,
-          pageSize: 6,
+          pageSize: 7,
           toolbar: true,
           actionsColumnIndex: -1,
           addRowPosition: "first",
-        }}
-        editable={{
-          onRowDelete: (oldData) =>
-            new Promise((resolve, reject) => {
-              axios
-                .delete(`${baseURL}/event/${oldData._id}`)
-                .then(() => {
-                  fetchEvents();
-                  Swal.fire("Success", "Event was deleted", "success");
-                  resolve();
-                })
-                .catch((error) => {
-                  console.log(error);
-                  resolve();
-                });
-            }),
         }}
       />
     </div>
@@ -216,4 +200,4 @@ function Item(props) {
   );
 }
 
-export default Events;
+export default ArchieveJobs;
