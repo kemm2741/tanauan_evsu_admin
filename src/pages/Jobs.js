@@ -26,6 +26,9 @@ import { Paper } from "@material-ui/core";
 // Image grid
 import Carousel from "react-material-ui-carousel";
 
+// Imp
+import JobHelper from "./Jobs/JobHelper";
+
 const useStyles = makeStyles((theme) => ({
   lineChartDesign: {
     margin: theme.spacing(3),
@@ -159,6 +162,9 @@ const Jobs = () => {
           toolbar: true,
           actionsColumnIndex: -1,
           addRowPosition: "first",
+        }}
+        detailPanel={(rowdata) => {
+          return <JobHelper users={rowdata.users} />;
         }}
         editable={{
           onRowDelete: (oldData) =>

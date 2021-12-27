@@ -3,6 +3,9 @@ import React, { useContext, useEffect, useState } from "react";
 // ! Base URL
 import { baseURL } from "../utils/baseURL";
 
+//
+import moment from "moment";
+
 // Import Axios
 import axios from "axios";
 
@@ -367,37 +370,46 @@ export default function Layout({ children }) {
                         onKeyDown={handleListKeyDown}
                       >
                         {notification.map((notif) => (
-                          <MenuItem
-                            onClick={async () => {
-                              try {
-                                const { data } = await axios.get(
-                                  `${baseURL}/admin/update-viewed-notif/${notif._id}`
-                                );
-                                callNotfiaction();
-                              } catch (error) {
-                                console.log(error);
-                              }
-                            }}
-                            style={{
-                              marginBottom: "5px",
-                            }}
-                            className={notif.viewed ? classes.viewed : null}
-                          >
-                            <ListItemIcon>
-                              <DraftsIcon fontSize="small" />
-                            </ListItemIcon>
-                            <Typography variant="inherit" noWrap>
-                              <p
-                                onClick={() => {
-                                  history.push(`${notif.link}`);
-                                }}
-                                className="p-2"
-                                dangerouslySetInnerHTML={{
-                                  __html: notif.message,
-                                }}
-                              />
-                            </Typography>
-                          </MenuItem>
+                          <>
+                            <MenuItem
+                              className={classes.menuItemNotContainer}
+                              onClick={async () => {
+                                try {
+                                  const { data } = await axios.get(
+                                    `${baseURL}/admin/update-viewed-notif/${notif._id}`
+                                  );
+                                  callNotfiaction();
+                                } catch (error) {
+                                  console.log(error);
+                                }
+                              }}
+                              style={{
+                                marginBottom: "5px",
+                              }}
+                              className={notif.viewed ? classes.viewed : null}
+                            >
+                              <ListItemIcon>
+                                <DraftsIcon fontSize="small" />
+                              </ListItemIcon>
+                              <Typography variant="inherit" noWrap>
+                                <p
+                                  onClick={() => {
+                                    history.push(`${notif.link}`);
+                                  }}
+                                  className="p-2"
+                                  dangerouslySetInnerHTML={{
+                                    __html: notif.message,
+                                  }}
+                                />
+                              </Typography>
+                            </MenuItem>
+
+                            <span>
+                              {moment(notif.createdAt)
+                                .startOf("hour")
+                                .fromNow()}
+                            </span>
+                          </>
                         ))}
                       </MenuList>
                     </ClickAwayListener>

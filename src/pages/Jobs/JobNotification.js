@@ -22,6 +22,9 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
+// Image Viewer
+import ImageViewer from "../../utils/ImageViwer";
+
 const useStyles = makeStyles((theme) => ({
   paper: {
     paddingLeft: theme.spacing(4),
@@ -81,24 +84,72 @@ const JobNotification = () => {
 
   const [jobApplication, setJobApplication] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+
+  const [images, setImages] = useState([]);
+
   //   fetch job apply info
   const fetchJobInfo = async () => {
     try {
       setIsLoading(true);
-      const { data } = await axios.get(
+
+      const { data, status } = await axios.get(
         `${baseURL}/job/get-job-apply-info/${id}`
       );
-      setJobApplication(data.jobApp);
-      console.log(data.jobApp);
 
-      setIsLoading(false);
+      if (status === 200) {
+        const { resume } = data.jobApp;
+        setJobApplication(data.jobApp);
+
+        console.log(data.jobApp);
+
+        setImages(
+          resume.map((resum, index) => {
+            if (index === 0) {
+              return {
+                url: resum.url,
+                active: true,
+              };
+            } else {
+              return {
+                url: resum.url,
+                active: false,
+              };
+            }
+          })
+        );
+
+        setIsLoading(false);
+      }
     } catch (error) {
       console.log(error);
       setIsLoading(false);
     }
   };
 
-  // initiate Context
+  const handleSubmitResume = async (e) => {
+    e.preventDefault();
+
+    const email = jobApplication.job.email;
+    const jobTitle = jobApplication.job.jobTitle;
+    const resume = jobApplication.resume.map((data) => data.url);
+
+    console.log(resume);
+
+    try {
+      const { data } = await axios.post(
+        `${baseURL}/admin/send-job-application-resume`,
+        {
+          resume,
+          email,
+          jobTitle,
+        }
+      );
+
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     fetchJobInfo();
@@ -192,7 +243,7 @@ const JobNotification = () => {
                     <Grid xs={12} sm={12} item>
                       <Button
                         className={classes.formButton}
-                        // onClick={handleSubmit}
+                        onClick={handleSubmitResume}
                         type="submit"
                         variant="contained"
                         color="primary"
@@ -229,12 +280,10 @@ const JobNotification = () => {
                   >
                     Resume
                   </Typography>
-                  <Typography paragraph color="textSecondary" gutterBottom>
-                    Review profile
-                  </Typography>
                 </CardContent>
 
-                <img src="" alt="" />
+                <ImageViewer setImages={setImages} images={images} />
+                {/* <img src={jobApplication.resume[0].url} alt="profile-image" /> */}
               </Card>
             </Grid>
           </Grid>
