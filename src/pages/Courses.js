@@ -169,6 +169,16 @@ const Courses = () => {
                 >
                   Archieve Course
                 </Button>
+
+                <Button
+                  onClick={() => {
+                    history.push("/course");
+                  }}
+                  variant="contained"
+                  color="primary"
+                >
+                  Active Course
+                </Button>
               </div>
             </div>
           ),

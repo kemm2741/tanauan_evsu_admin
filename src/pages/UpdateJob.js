@@ -74,6 +74,7 @@ const UpdateJob = () => {
   const intialState = {
     jobTitle: "",
     jobCompany: " ",
+    jobAddress: " ",
   };
 
   const [editorState, setEditorState] = useState(null);
@@ -86,7 +87,7 @@ const UpdateJob = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // Selected Courses
-  const [selectedCourse, setSelectedCourses] = useState(null);
+  const [selectedCourse, setSelectedCourses] = useState([]);
   const [type, setType] = useState(true);
 
   const handleOnChange = (e) => {
@@ -212,15 +213,19 @@ const UpdateJob = () => {
       };
     });
 
-    if (jobData.jobTitle === " ") {
+    if (jobData.jobTitle === "") {
       return Swal.fire("error", "Title must not be empty", "error");
     }
 
-    if (jobData.jobCompany === " ") {
+    if (jobData.jobCompany === "") {
       return Swal.fire("error", "Company must not be empty", "error");
     }
 
-    if (description === " ") {
+    if (jobData.jobAddress === "") {
+      return Swal.fire("error", "Job Address must not be empty", "error");
+    }
+
+    if (description === "") {
       return Swal.fire("error", "Description must not be empty", "error");
     }
 
@@ -232,6 +237,7 @@ const UpdateJob = () => {
 
     form.append("jobTitle", jobData.jobTitle);
     form.append("jobCompany", jobData.jobCompany);
+    form.append("jobAddress", jobData.jobAddress);
     form.append("jobDescription", description);
     form.append("type", type);
     form.append("course", JSON.stringify(course));
@@ -259,8 +265,14 @@ const UpdateJob = () => {
       const { data, status } = await axios.get(`${baseURL}/job/job-info/${id}`);
 
       if (status === 200) {
-        const { jobTitle, jobCompany, jobDescription, jobImage, course } =
-          data.job;
+        const {
+          jobTitle,
+          jobCompany,
+          jobAddress,
+          jobDescription,
+          jobImage,
+          course,
+        } = data.job;
 
         // Course
         if (course.length > 0) {
@@ -311,6 +323,7 @@ const UpdateJob = () => {
           ...jobData,
           jobTitle: jobTitle,
           jobCompany: jobCompany,
+          jobAddress: jobAddress,
         });
 
         setIsLoading(false);
@@ -370,6 +383,17 @@ const UpdateJob = () => {
             />
 
             <TextField
+              className={classes.field}
+              onChange={handleOnChange}
+              label="Job Address"
+              variant="outlined"
+              name="jobAddress"
+              value={jobData.jobAddress}
+              fullWidth
+              required
+            />
+
+            <TextField
               value={type}
               onChange={(e) => {
                 setType(e.target.value);
@@ -391,6 +415,7 @@ const UpdateJob = () => {
                 onChange={(val) => {
                   setSelectedCourses(val);
                 }}
+                menuPortalTarget={document.body}
                 value={selectedCourse}
                 // name="selectedCourse"
                 placeholder="Courses' event"

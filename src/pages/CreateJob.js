@@ -72,6 +72,8 @@ const CreateJob = () => {
   const intialState = {
     jobTitle: "",
     jobCompany: "",
+    jobAddress: "",
+    email: "",
   };
 
   const [editorState, setEditorState] = useState(null);
@@ -84,7 +86,7 @@ const CreateJob = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // Selected Courses
-  const [selectedCourse, setSelectedCourses] = useState(null);
+  const [selectedCourse, setSelectedCourses] = useState([]);
   const [type, setType] = useState(true);
 
   const handleOnChange = (e) => {
@@ -99,7 +101,7 @@ const CreateJob = () => {
   const fetchCourse = async () => {
     try {
       const { data } = await axios.get(`${baseURL}/course`);
-      const courseOption = data.map((course) => {
+      const courseOption = data?.map((course) => {
         return {
           value: course._id,
           label: `${course.courseName} (${course.courseAbbreviation})`,
@@ -142,17 +144,25 @@ const CreateJob = () => {
       ? draftToHtml(convertToRaw(editorState.getCurrentContent()))
       : "<span></span>";
 
-    const course = selectedCourse.map((data) => data.value);
+    let course = selectedCourse?.map((data) => data.value);
 
-    if (jobData.jobTitle === " ") {
+    if (jobData.jobTitle === "") {
       return Swal.fire("error", "Title must not be empty", "error");
     }
 
-    if (jobData.jobCompany === " ") {
+    if (jobData.jobCompany === "") {
       return Swal.fire("error", "Job Company must not be empty", "error");
     }
 
-    if (description === " ") {
+    if (jobData.jobAddress === "") {
+      return Swal.fire("error", "Job Address must not be empty", "error");
+    }
+
+    if (jobData.email === "") {
+      return Swal.fire("error", "Email must not be empty", "error");
+    }
+
+    if (description === "") {
       return Swal.fire("error", "Description must not be empty", "error");
     }
 
@@ -168,6 +178,8 @@ const CreateJob = () => {
 
     form.append("jobTitle", jobData.jobTitle);
     form.append("jobCompany", jobData.jobCompany);
+    form.append("jobAddress", jobData.jobAddress);
+    form.append("email", jobData.email);
     form.append("jobDescription", description);
     form.append("type", type);
     form.append("course", JSON.stringify(course));
@@ -175,14 +187,6 @@ const CreateJob = () => {
     for (let image of images) {
       form.append("images", image.file);
     }
-
-    // console.log(
-    //   `Job Title ${jobData.jobTitle}`,
-    //   `Job Company ${jobData.jobCompany}`,
-    //   `Job Description ${description}`,
-    //   `Type ${type}`,
-    //   `Course ${course}`
-    // );
 
     try {
       setIsLoading(true);
@@ -234,6 +238,29 @@ const CreateJob = () => {
               name="jobCompany"
               className={classes.field}
               value={jobData.jobCompany}
+              fullWidth
+              required
+            />
+
+            <TextField
+              className={classes.field}
+              onChange={handleOnChange}
+              label="Job Address"
+              variant="outlined"
+              name="jobAddress"
+              value={jobData.jobAddress}
+              fullWidth
+              required
+            />
+
+            <TextField
+              className={classes.field}
+              onChange={handleOnChange}
+              type="email"
+              label="Email"
+              variant="outlined"
+              name="email"
+              value={jobData.email}
               fullWidth
               required
             />

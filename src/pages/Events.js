@@ -136,7 +136,7 @@ const Events = () => {
               <div style={{ padding: "0px 10px" }}>
                 <Button
                   onClick={() => {
-                    // history.push("/jobs");
+                    history.push("/events");
                   }}
                   className={classes.chipButton}
                   variant="contained"
@@ -146,7 +146,7 @@ const Events = () => {
                 </Button>
                 <Button
                   onClick={() => {
-                    // history.push("/jobs/archieve-jobs");
+                    history.push("/events/archieve-events");
                   }}
                   className={classes.chipButton}
                   variant="contained"
@@ -188,7 +188,7 @@ const Events = () => {
                 .delete(`${baseURL}/event/${oldData._id}`)
                 .then(() => {
                   fetchEvents();
-                  Swal.fire("Success", "Event was deleted", "success");
+                  Swal.fire("Success", "Event was archieve", "success");
                   resolve();
                 })
                 .catch((error) => {

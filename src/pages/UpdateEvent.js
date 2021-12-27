@@ -95,7 +95,7 @@ const UpdateEvent = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // Selected Courses
-  const [selectedCourse, setSelectedCourses] = useState(null);
+  const [selectedCourse, setSelectedCourses] = useState([]);
   const [type, setType] = useState(true);
 
   const handleOnChange = (e) => {
@@ -131,8 +131,6 @@ const UpdateEvent = () => {
   // Image Upload Change
   const [images, setImages] = useState([]);
   const [addingUpdateImages, setAddingUpdateImages] = useState([]);
-
-  //   const [updateProduct, setUpdateProduct] = useState(null);
 
   const handlingRemove = async (item) => {
     const { _id, status } = item;
@@ -227,15 +225,15 @@ const UpdateEvent = () => {
       };
     });
 
-    if (selectedDate === " ") {
+    if (selectedDate === "") {
       return Swal.fire("error", "Date must not be empty", "error");
     }
 
-    if (eventData.eventTitle === " ") {
+    if (eventData.eventTitle === "") {
       return Swal.fire("error", "Title must not be empty", "error");
     }
 
-    if (description === " ") {
+    if (description === "") {
       return Swal.fire("error", "Title must not be empty", "error");
     }
 
@@ -337,16 +335,6 @@ const UpdateEvent = () => {
         // Event Schedule
         setSelectedDate(new Date(eventSchedule));
 
-        // console.log(eventDescription, eventImage, eventTitle, date);
-
-        // //   Description
-        // console.log(data.event.eventDescription);
-        // // Event Images
-        // console.log(data.event.eventDescription.eventImage);
-        // // Event Images
-        // console.log(data.event.eventDescription.eventTitle);
-        // // Event Date
-        // console.log(data.event.eventDescription.date);
         setIsLoading(false);
       } else {
         setIsLoading(false);
@@ -414,6 +402,7 @@ const UpdateEvent = () => {
                 onChange={(val) => {
                   setSelectedCourses(val);
                 }}
+                menuPortalTarget={document.body}
                 value={selectedCourse}
                 // name="selectedCourse"
                 placeholder="Courses' event"

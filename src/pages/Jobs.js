@@ -52,6 +52,8 @@ const Jobs = () => {
   const [columns, setColumns] = useState([
     { title: "Job Title", field: "jobTitle" },
     { title: "Company Name", field: "jobCompany" },
+    { title: "Email  Address", field: "email" },
+    { title: "Job Address ", field: "jobAddress" },
     {
       title: "Job Images",
       field: "jobImage",

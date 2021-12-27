@@ -115,6 +115,16 @@ const ArchieveCourses = () => {
               >
                 Active Course
               </Button>
+
+              <Button
+                onClick={() => {
+                  history.push("/archieve-course");
+                }}
+                variant="contained"
+                color="primary"
+              >
+                Archieve Course
+              </Button>
             </div>
           </div>
         ),

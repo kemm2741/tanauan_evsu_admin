@@ -10,6 +10,8 @@ import Swal from "sweetalert2";
 //! Base URL;
 import { baseURL } from "../utils/baseURL";
 
+import { useHistory } from "react-router-dom";
+
 // Base 64
 import base64 from "../utils/base64";
 import ImageGallery from "../utils/ImageGallery";
@@ -72,6 +74,7 @@ const useStyles = makeStyles({
 
 const CreateEvent = () => {
   const classes = useStyles();
+  const history = useHistory();
 
   const intialState = {
     eventTitle: "",
@@ -88,7 +91,7 @@ const CreateEvent = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // Selected Courses
-  const [selectedCourse, setSelectedCourses] = useState(null);
+  const [selectedCourse, setSelectedCourses] = useState([]);
   const [type, setType] = useState(true);
 
   const handleOnChange = (e) => {
@@ -154,15 +157,15 @@ const CreateEvent = () => {
 
     const course = selectedCourse.map((data) => data.value);
 
-    if (selectedDate === " ") {
+    if (selectedDate === "") {
       return Swal.fire("error", "Date must not be empty", "error");
     }
 
-    if (eventData.eventTitle === " ") {
+    if (eventData.eventTitle === "") {
       return Swal.fire("error", "Title must not be empty", "error");
     }
 
-    if (description === " ") {
+    if (description === "") {
       return Swal.fire("error", "Title must not be empty", "error");
     }
 
@@ -193,6 +196,8 @@ const CreateEvent = () => {
       const { data } = await axios.post(`${baseURL}/event`, form);
       console.log(data);
       setIsLoading(false);
+
+      history.push("/events");
     } catch (error) {
       console.log(error);
       setIsLoading(false);
@@ -247,6 +252,7 @@ const CreateEvent = () => {
 
             {!type ? (
               <Select
+                menuPortalTarget={document.body}
                 isMulti
                 onChange={(val) => {
                   setSelectedCourses(val);

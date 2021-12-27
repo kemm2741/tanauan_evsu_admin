@@ -26,6 +26,9 @@ import Events from "./pages/Events";
 import Jobs from "./pages/Jobs";
 import ArchieveJobs from "./pages/Jobs/ArchieveJobs";
 
+// Events
+import ArchiveEvents from "./pages/Events/ArchiveEvents";
+
 import Logs from "./pages/Logs";
 import User from "./pages/User";
 import Subscribers from "./pages/Subscribers";
@@ -35,8 +38,10 @@ import Profile from "./pages/Profile";
 import CreateEvent from "./pages/CreateEvent";
 import UpdateEvent from "./pages/UpdateEvent";
 
+//  Job
 import CreateJob from "./pages/CreateJob";
 import UpdateJob from "./pages/UpdateJob";
+import JobApplicationInfo from "./pages/Jobs/JobNotification";
 
 // 404 Page Not Found
 import NotFound from "./pages/NotFound";
@@ -116,9 +121,14 @@ function App() {
             <PrivateRoute path="/createEvent">
               <CreateEvent />
             </PrivateRoute>
-            <PrivateRoute path="/events">
+            <PrivateRoute exact path="/events">
               <Events />
             </PrivateRoute>
+
+            <PrivateRoute path="/events/archieve-events">
+              <ArchiveEvents />
+            </PrivateRoute>
+
             <PrivateRoute path="/event-edit/:id">
               <UpdateEvent />
             </PrivateRoute>
@@ -129,6 +139,10 @@ function App() {
             <PrivateRoute exact path="/jobs">
               <Jobs />
             </PrivateRoute>
+            <PrivateRoute path="/job-applicant-info/:id">
+              <JobApplicationInfo />
+            </PrivateRoute>
+
             <PrivateRoute path="/jobs/archieve-jobs">
               <ArchieveJobs />
             </PrivateRoute>

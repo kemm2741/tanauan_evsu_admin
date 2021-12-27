@@ -15,17 +15,20 @@ import Drawer from "@material-ui/core/Drawer";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import Hidden from "@material-ui/core/Hidden";
+import NotificationsIcon from "@material-ui/icons/Notifications";
 
 // Material UI List
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
+import Tooltip from "@material-ui/core/Tooltip";
+import Badge from "@material-ui/core/Badge";
 
 // Material Icons
 import { SubjectOutlined } from "@material-ui/icons";
 // React Icons
-import { AiOutlineForm, AiFillDashboard } from "react-icons/ai";
+import { AiFillDashboard } from "react-icons/ai";
 import { CgProfile } from "react-icons/cg";
 import { FaRegCalendarTimes } from "react-icons/fa";
 
@@ -36,9 +39,19 @@ import Avatar from "@material-ui/core/Avatar";
 
 // Date Formater
 import { format } from "date-fns";
-
 import MenuIcon from "@material-ui/icons/Menu";
 import IconButton from "@material-ui/core/IconButton";
+
+// Notifaction paper
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import Grow from "@material-ui/core/Grow";
+import Popper from "@material-ui/core/Popper";
+import MenuList from "@material-ui/core/MenuList";
+import MenuItem from "@material-ui/core/MenuItem";
+import Paper from "@material-ui/core/Paper";
+import DraftsIcon from "@material-ui/icons/Drafts";
+import SendIcon from "@material-ui/icons/Send";
+import PriorityHighIcon from "@material-ui/icons/PriorityHigh";
 
 // Sweet Alert
 import Swal from "sweetalert2/dist/sweetalert2.js";
@@ -47,7 +60,6 @@ import Swal from "sweetalert2/dist/sweetalert2.js";
 import AuthContext from "../context/auth/authContext";
 
 const drawerWidth = 240;
-
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -110,6 +122,22 @@ const useStyles = makeStyles((theme) => ({
       cursor: "pointer",
     },
   },
+  notifcationDiv: {
+    marginRight: "5px",
+  },
+  customBadge: {
+    backgroundColor: "white",
+    border: "1px #710000 solid",
+    color: "#710000",
+  },
+  notificationDiv: {
+    maxHeight: "600px",
+    overflowY: "auto",
+    paddingInline: "10px",
+  },
+  viewed: {
+    backgroundColor: "#E7DEDE",
+  },
 }));
 
 export default function Layout({ children }) {
@@ -149,8 +177,59 @@ export default function Layout({ children }) {
     },
   ];
 
+  const [open, setOpen] = React.useState(false);
+  const anchorRef = React.useRef(null);
+  const [notification, setNotification] = useState([]);
+  const [notificationLength, setNotificationLength] = useState(0);
+
+  const handleToggle = () => {
+    setOpen((prevOpen) => !prevOpen);
+  };
+
+  const handleClose = (event) => {
+    if (anchorRef.current && anchorRef.current.contains(event.target)) {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  function handleListKeyDown(event) {
+    if (event.key === "Tab") {
+      event.preventDefault();
+      setOpen(false);
+    }
+  }
+
+  // return focus to the button when we transitioned from !open -> open
+  const prevOpen = React.useRef(open);
+  useEffect(() => {
+    if (prevOpen.current === true && open === false) {
+      anchorRef.current.focus();
+    }
+
+    prevOpen.current = open;
+  }, [open]);
+
+  // Call Notifications
+  const callNotfiaction = () => {
+    setInterval(async () => {
+      try {
+        const { data } = await axios.get(
+          `${baseURL}/admin/get-notification-info`
+        );
+        setNotification(data.notif);
+        const notifLength = data.notif.filter((notif) => !notif.viewed);
+        setNotificationLength(notifLength.length);
+      } catch (error) {
+        console.log(error);
+      }
+    }, 4000);
+  };
+
   useEffect(() => {
     loadAdmin();
+    callNotfiaction();
   }, []);
 
   const drawer = (
@@ -246,6 +325,87 @@ export default function Layout({ children }) {
           <Typography className={classes.date}>
             Today is {format(new Date(), "do MMMM Y")}
           </Typography>
+
+          <div className={classes.notifcationDiv}>
+            <Tooltip arrow title="Notications">
+              <IconButton
+                ref={anchorRef}
+                aria-controls={open ? "menu-list-grow" : undefined}
+                aria-haspopup="true"
+                onClick={handleToggle}
+                aria-label="show 4 new mails"
+              >
+                <Badge
+                  classes={{ badge: classes.customBadge }}
+                  badgeContent={notificationLength}
+                  color="secondary"
+                >
+                  <NotificationsIcon color="secondary" />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+            <Popper
+              open={open}
+              anchorEl={anchorRef.current}
+              role={undefined}
+              transition
+              disablePortal
+            >
+              {({ TransitionProps, placement }) => (
+                <Grow
+                  {...TransitionProps}
+                  style={{
+                    transformOrigin:
+                      placement === "bottom" ? "center top" : "center bottom",
+                  }}
+                >
+                  <Paper className={classes.notificationDiv}>
+                    <ClickAwayListener onClickAway={handleClose}>
+                      <MenuList
+                        autoFocusItem={open}
+                        id="menu-list-grow"
+                        onKeyDown={handleListKeyDown}
+                      >
+                        {notification.map((notif) => (
+                          <MenuItem
+                            onClick={async () => {
+                              try {
+                                const { data } = await axios.get(
+                                  `${baseURL}/admin/update-viewed-notif/${notif._id}`
+                                );
+                                callNotfiaction();
+                              } catch (error) {
+                                console.log(error);
+                              }
+                            }}
+                            style={{
+                              marginBottom: "5px",
+                            }}
+                            className={notif.viewed ? classes.viewed : null}
+                          >
+                            <ListItemIcon>
+                              <DraftsIcon fontSize="small" />
+                            </ListItemIcon>
+                            <Typography variant="inherit" noWrap>
+                              <p
+                                onClick={() => {
+                                  history.push(`${notif.link}`);
+                                }}
+                                className="p-2"
+                                dangerouslySetInnerHTML={{
+                                  __html: notif.message,
+                                }}
+                              />
+                            </Typography>
+                          </MenuItem>
+                        ))}
+                      </MenuList>
+                    </ClickAwayListener>
+                  </Paper>
+                </Grow>
+              )}
+            </Popper>
+          </div>
 
           <Typography className={classes.loginNameUser} variant="h6">
             Hello {admin?.userName}
