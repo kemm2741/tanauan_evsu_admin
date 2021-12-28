@@ -150,16 +150,6 @@ const Alumnis = () => {
       title: "Year Graduated",
       field: "yearGraduated",
     },
-
-    // {
-    //   title: "Date Created",
-    //   field: "date",
-    //   type: "date",
-    //   editable: "never",
-    //   dateSetting: {
-    //     format: "dd/MM/yyyy",
-    //   },
-    // },
   ]);
 
   //   Open Modal and Close
@@ -185,8 +175,6 @@ const Alumnis = () => {
         };
       });
       setData(withAge);
-
-      console.log(withAge);
 
       setIsLoading(false);
     } catch (error) {

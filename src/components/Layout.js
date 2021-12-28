@@ -55,7 +55,7 @@ import Paper from "@material-ui/core/Paper";
 import DraftsIcon from "@material-ui/icons/Drafts";
 import SendIcon from "@material-ui/icons/Send";
 import PriorityHighIcon from "@material-ui/icons/PriorityHigh";
-
+import EmailIcon from "@material-ui/icons/Email";
 // Sweet Alert
 import Swal from "sweetalert2/dist/sweetalert2.js";
 
@@ -389,8 +389,13 @@ export default function Layout({ children }) {
                               className={notif.viewed ? classes.viewed : null}
                             >
                               <ListItemIcon>
-                                <DraftsIcon fontSize="small" />
+                                {notif.viewed ? (
+                                  <EmailIcon fontSize="small" />
+                                ) : (
+                                  <DraftsIcon fontSize="small" />
+                                )}
                               </ListItemIcon>
+
                               <Typography variant="inherit" noWrap>
                                 <p
                                   onClick={() => {

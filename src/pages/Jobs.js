@@ -164,7 +164,7 @@ const Jobs = () => {
           addRowPosition: "first",
         }}
         detailPanel={(rowdata) => {
-          return <JobHelper users={rowdata.users} />;
+          return <JobHelper rowdata={rowdata} />;
         }}
         editable={{
           onRowDelete: (oldData) =>

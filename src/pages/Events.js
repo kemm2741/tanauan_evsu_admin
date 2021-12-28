@@ -24,6 +24,9 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import { Paper, Button } from "@material-ui/core";
 
+// Events Helper
+import EventsHelper from "./Events/EventsHelper";
+
 // Import image grid
 import Carousel from "react-material-ui-carousel";
 
@@ -32,8 +35,8 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(3),
   },
   paper: {
-    width: "170px",
-    height: "150px",
+    width: "140px",
+    height: "120px",
     display: "block",
     marginInline: "auto",
   },
@@ -59,7 +62,6 @@ const Events = () => {
       field: "eventImage",
       editable: false,
       filtering: false,
-
       render: (rowData) => {
         const images = rowData.eventImage.map((image) => image.url);
         return (
@@ -174,12 +176,15 @@ const Events = () => {
           },
         ]}
         options={{
-          exportButton: true,
+          // exportButton: true,
           filtering: true,
           pageSize: 6,
           toolbar: true,
           actionsColumnIndex: -1,
           addRowPosition: "first",
+        }}
+        detailPanel={(rowdata) => {
+          return <EventsHelper rowdata={rowdata} />;
         }}
         editable={{
           onRowDelete: (oldData) =>

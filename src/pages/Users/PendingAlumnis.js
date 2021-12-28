@@ -266,9 +266,6 @@ const PendingAlumnis = () => {
         data={data}
         onRowClick={(event, rowData, togglePanel) => {
           handleOpenModal();
-
-          console.log(rowData);
-
           setAlumniData(rowData);
         }}
         components={{
@@ -303,21 +300,23 @@ const PendingAlumnis = () => {
         actions={[
           {
             icon: () => <GrRevert size={24} />,
-            tooltip: "Active Course",
-            onClick: (event, rowData) => {
-              axios
-                .post(`${baseURL}/user/update-status-user`, {
-                  userId: rowData._id,
-                  status: "active",
-                })
-                .then(({ data }) => {
-                  fetchUsers();
-                  Swal.fire("Success", "Account is not active", "success");
-                })
-                .catch((err) => {
-                  fetchUsers();
-                  Swal.fire("Error", `${err.response.data.msg}`, "error");
-                });
+            tooltip: "Approved User",
+            onClick: async (event, rowData) => {
+              try {
+                setIsLoading(true);
+                const { data } = await axios.post(
+                  `${baseURL}/user/update-status-user`,
+                  {
+                    userId: rowData._id,
+                    status: "active",
+                  }
+                );
+                setIsLoading(false);
+              } catch (error) {
+                fetchUsers();
+                Swal.fire("Error", `${error.response.data.msg}`, "error");
+                setIsLoading(false);
+              }
             },
           },
         ]}
@@ -330,19 +329,24 @@ const PendingAlumnis = () => {
           addRowPosition: "first",
         }}
         editable={{
-          onRowDelete: (oldData) =>
+          onRowDelete: async (oldData) =>
             new Promise((resolve, reject) => {
+              setIsLoading(true);
               axios
                 .post(`${baseURL}/user/deleting-pending-request/`, {
                   userId: oldData._id,
                 })
                 .then(({ data }) => {
+                  setIsLoading(false);
                   Swal.fire("Success", "User account deleted", "success");
                   fetchUsers();
+                  resolve();
                 })
                 .catch((err) => {
+                  setIsLoading(false);
                   fetchUsers();
                   Swal.fire("Error", `${err.response.data.msg}`, "error");
+                  resolve();
                 });
             }),
         }}

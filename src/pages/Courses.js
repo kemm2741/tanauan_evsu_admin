@@ -26,11 +26,19 @@ import axios from "axios";
 
 // Import matarial table
 import MaterialTable, { MTableToolbar } from "material-table";
+import { makeStyles } from "@material-ui/core/styles";
 
 // Page Helper Component
 import CourseHelper from "./PageHelper/CourseHelper";
 
+const useStyles = makeStyles((theme) => ({
+  chipButton: {
+    marginRight: "10px",
+  },
+}));
+
 const Courses = () => {
+  const classes = useStyles();
   const history = useHistory();
 
   const [data, setData] = useState();
@@ -161,6 +169,7 @@ const Courses = () => {
               <MTableToolbar {...props} />
               <div style={{ padding: "0px 10px" }}>
                 <Button
+                  className={classes.chipButton}
                   onClick={() => {
                     history.push("/archieve-course");
                   }}
@@ -171,6 +180,7 @@ const Courses = () => {
                 </Button>
 
                 <Button
+                  className={classes.chipButton}
                   onClick={() => {
                     history.push("/course");
                   }}
