@@ -47,29 +47,28 @@ const Courses = () => {
     { title: "Courses", field: "courseName" },
     { title: "Course ABV", field: "courseAbbreviation" },
     {
-      title: "Date Created",
-      field: "date",
-      type: "date",
-      editable: false,
-      dateSetting: {
-        format: "dd/MM/yyyy",
-      },
-    },
-    {
       title: "Graduated With This Course",
       field: "usersEnrolled",
       editable: false,
       filtering: false,
     },
+    {
+      title: "Date Created",
+      field: "date",
+      type: "date",
+      editable: false,
+      export: false,
+      dateSetting: {
+        format: "dd/MM/yyyy",
+      },
+    },
   ]);
 
-  // fEtch Course
+  // fEtchCourse
   const fetchCourse = async () => {
     try {
       setIsLoading(true);
       const { data } = await axios.get(`${baseURL}/course`);
-
-      console.log(data);
 
       const mainData = data.map((item) => {
         return {
@@ -77,8 +76,6 @@ const Courses = () => {
           usersEnrolled: item.users.length,
         };
       });
-      // ! Logging the Data Input -------------
-      console.log(mainData);
       setData(mainData);
       setIsLoading(false);
     } catch (error) {
@@ -171,23 +168,23 @@ const Courses = () => {
                 <Button
                   className={classes.chipButton}
                   onClick={() => {
+                    history.push("/courses");
+                  }}
+                  variant="contained"
+                  color="primary"
+                >
+                  Active Course
+                </Button>
+
+                <Button
+                  className={classes.chipButton}
+                  onClick={() => {
                     history.push("/archieve-course");
                   }}
                   variant="contained"
                   color="primary"
                 >
                   Archieve Course
-                </Button>
-
-                <Button
-                  className={classes.chipButton}
-                  onClick={() => {
-                    history.push("/course");
-                  }}
-                  variant="contained"
-                  color="primary"
-                >
-                  Active Course
                 </Button>
               </div>
             </div>

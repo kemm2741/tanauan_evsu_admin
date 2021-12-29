@@ -166,7 +166,7 @@ const CourseHelper = ({ graduates, courseName }) => {
   }, []);
 
   return (
-    <div style={{ padding: "40px" }}>
+    <div style={{ padding: "50px 40px", backgroundColor: "#ebe9e9" }}>
       <Grid container spacing={3}>
         <Grid xs={12} md={8} lg={8} item align="center">
           <MaterialTable
@@ -184,8 +184,8 @@ const CourseHelper = ({ graduates, courseName }) => {
           />
         </Grid>
 
-        <Grid xs={12} md={8} lg={4} item align="center">
-          <PieChart width={450} height={400}>
+        <Grid xs={12} md={8} lg={4} item justify="center" align="center">
+          <PieChart width={400} height={400}>
             <Pie
               activeIndex={activeIndex}
               activeShape={renderActiveShape}

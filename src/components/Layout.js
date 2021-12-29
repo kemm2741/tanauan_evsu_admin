@@ -370,7 +370,12 @@ export default function Layout({ children }) {
                         onKeyDown={handleListKeyDown}
                       >
                         {notification.map((notif) => (
-                          <>
+                          <div
+                            style={{ width: "100%", height: "100%" }}
+                            onClick={() => {
+                              history.push(`${notif.link}`);
+                            }}
+                          >
                             <MenuItem
                               className={classes.menuItemNotContainer}
                               onClick={async () => {
@@ -386,21 +391,18 @@ export default function Layout({ children }) {
                               style={{
                                 marginBottom: "5px",
                               }}
-                              className={notif.viewed ? classes.viewed : null}
+                              className={!notif.viewed ? classes.viewed : null}
                             >
                               <ListItemIcon>
                                 {notif.viewed ? (
-                                  <EmailIcon fontSize="small" />
-                                ) : (
                                   <DraftsIcon fontSize="small" />
+                                ) : (
+                                  <EmailIcon fontSize="small" />
                                 )}
                               </ListItemIcon>
 
                               <Typography variant="inherit" noWrap>
                                 <p
-                                  onClick={() => {
-                                    history.push(`${notif.link}`);
-                                  }}
                                   className="p-2"
                                   dangerouslySetInnerHTML={{
                                     __html: notif.message,
@@ -408,13 +410,12 @@ export default function Layout({ children }) {
                                 />
                               </Typography>
                             </MenuItem>
-
-                            <span>
+                            <span style={{ fontWeight: "500" }}>
                               {moment(notif.createdAt)
                                 .startOf("hour")
                                 .fromNow()}
                             </span>
-                          </>
+                          </div>
                         ))}
                       </MenuList>
                     </ClickAwayListener>

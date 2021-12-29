@@ -16,6 +16,7 @@ import Dashboard from "./pages/Dashboard";
 // Alumnis
 import Alumnis from "./pages/Alumnis";
 import PendingAlumnis from "./pages/Users/PendingAlumnis";
+import NewSignUp from "./pages/Users/NewSignUp";
 
 // Course
 import Courses from "./pages/Courses";
@@ -28,6 +29,7 @@ import ArchieveJobs from "./pages/Jobs/ArchieveJobs";
 
 // Events
 import ArchiveEvents from "./pages/Events/ArchiveEvents";
+import AttendEventInfo from "./pages/Events/AttendEventInfo";
 
 import Logs from "./pages/Logs";
 import User from "./pages/User";
@@ -96,6 +98,10 @@ function App() {
             <PrivateRoute exact path="/alumni/pending-user">
               <PendingAlumnis />
             </PrivateRoute>
+            <PrivateRoute exact path="/new-user-sign-up/:id">
+              <NewSignUp />
+            </PrivateRoute>
+
             <PrivateRoute path="/courses">
               <Courses />
             </PrivateRoute>
@@ -132,6 +138,10 @@ function App() {
             <PrivateRoute path="/event-edit/:id">
               <UpdateEvent />
             </PrivateRoute>
+            <PrivateRoute path="/new-user-attending-event/:id">
+              <AttendEventInfo />
+            </PrivateRoute>
+
             {/* Job */}
             <PrivateRoute path="/createJob">
               <CreateJob />

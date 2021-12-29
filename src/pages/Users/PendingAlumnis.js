@@ -311,6 +311,8 @@ const PendingAlumnis = () => {
                     status: "active",
                   }
                 );
+                fetchUsers();
+                Swal.fire("Success", "User account is now approved", "success");
                 setIsLoading(false);
               } catch (error) {
                 fetchUsers();

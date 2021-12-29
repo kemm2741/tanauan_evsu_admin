@@ -80,12 +80,13 @@
 }
 
 .image-gallery-list .image-active {
-  border: 1px solid #710000;
+  /* border: 1px solid #710000; */
 }
 
 .image-gallery-list .image-unactive {
-  border: 1.5px solid rgb(43, 42, 42);
+  /* border: 1.5px solid rgb(43, 42, 42); */
 }
+
 .image-gallery-list .image-gallery-remove {
   position: absolute;
   top: 2px;

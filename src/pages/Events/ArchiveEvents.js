@@ -190,7 +190,6 @@ const ArchiveEvents = () => {
           },
         ]}
         options={{
-          exportButton: true,
           filtering: true,
           pageSize: 6,
           toolbar: true,

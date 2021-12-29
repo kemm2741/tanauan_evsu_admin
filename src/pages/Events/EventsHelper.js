@@ -58,7 +58,6 @@ const EventsHelper = ({ rowdata }) => {
           addRowPosition: "first",
         }}
       />
-      {/* {JSON.stringify(withAge)} */}
     </div>
   );
 };

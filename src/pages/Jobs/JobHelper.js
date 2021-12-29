@@ -180,7 +180,6 @@ const JobHelper = ({ rowdata }) => {
             >
               <Fade in={openModal}>
                 <Card className={classes.card} elevation={2}>
-                  {/* No Content */}
                   <CardHeader
                     action={
                       <IconButton
@@ -212,15 +211,17 @@ const JobHelper = ({ rowdata }) => {
                 }
               /> */}
 
-                  {alumniData?.resume?.map((resums) => (
-                    <CardMedia
-                      component="img"
-                      alt="Alumni Profile"
-                      className={classes.media}
-                      image={resums.url}
-                      title="Alumni Resume"
-                    />
-                  ))}
+                  <Carousel>
+                    {alumniData?.resume?.map((resums) => (
+                      <CardMedia
+                        component="img"
+                        alt="Alumni Profile"
+                        className={classes.media}
+                        image={resums.url}
+                        title="Alumni Resume"
+                      />
+                    ))}
+                  </Carousel>
 
                   {/* <CardMedia
                 component="img"

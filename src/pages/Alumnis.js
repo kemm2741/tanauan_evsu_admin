@@ -82,7 +82,6 @@ const useStyles = makeStyles((theme) => ({
 
 const Alumnis = () => {
   const classes = useStyles();
-
   const history = useHistory();
 
   // Calcualte Age

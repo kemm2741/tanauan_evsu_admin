@@ -9,12 +9,20 @@ import { useHistory } from "react-router-dom";
 
 // ! Base URL
 import { baseURL } from "../utils/baseURL";
+import { makeStyles } from "@material-ui/core/styles";
 
 // Axios
 import axios from "axios";
 
+const useStyles = makeStyles((theme) => ({
+  chipButton: {
+    marginRight: "10px",
+  },
+}));
+
 const ArchieveCourses = () => {
   const history = useHistory();
+  const classes = useStyles();
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -64,7 +72,7 @@ const ArchieveCourses = () => {
       options={{
         exportButton: true,
         filtering: true,
-        pageSize: 20,
+        pageSize: 12,
         toolbar: true,
         actionsColumnIndex: -1,
         addRowPosition: "first",
@@ -107,6 +115,7 @@ const ArchieveCourses = () => {
             <MTableToolbar {...props} />
             <div style={{ padding: "0px 10px" }}>
               <Button
+                className={classes.chipButton}
                 onClick={() => {
                   history.push("/courses");
                 }}
@@ -117,6 +126,7 @@ const ArchieveCourses = () => {
               </Button>
 
               <Button
+                className={classes.chipButton}
                 onClick={() => {
                   history.push("/archieve-course");
                 }}

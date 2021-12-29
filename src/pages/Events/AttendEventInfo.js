@@ -10,7 +10,6 @@ import axios from "axios";
 
 // Sweet Alert
 import Swal from "sweetalert2";
-import Alert from "@material-ui/lab/Alert";
 
 // Material UI
 import { makeStyles } from "@material-ui/core/styles";
@@ -21,9 +20,6 @@ import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
-
-// Image Viewer
-import ImageViewer from "../../utils/ImageViwer";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -91,92 +87,43 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const JobNotification = () => {
+const AttendEventInfo = () => {
   const { id } = useParams();
   const history = useHistory();
   const classes = useStyles();
 
-  const [mainData, setMainData] = useState([]);
-  const [jobApplication, setJobApplication] = useState({});
+  const [eventData, setEventData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const [images, setImages] = useState([]);
   const [userData, setUserData] = useState({});
 
-  //   fetch job apply info
-  const fetchJobInfo = async () => {
+  //   Fetch Event
+  const fetchEventInfo = async () => {
     try {
       setIsLoading(true);
 
-      const { data, status } = await axios.get(
-        `${baseURL}/job/get-job-apply-info/${id}`
+      const { data, status } = await axios.post(
+        `${baseURL}/event/user-attend-event-info`,
+        {
+          atttendId: id,
+        }
       );
 
-      if (status === 200) {
-        const { resume } = data.jobApp;
-        setJobApplication(data.jobApp);
+      setEventData(data.event);
+      setUserData(data.user);
 
-        console.log(data.jobApp);
-        setMainData(data.jobApp);
-        setUserData(data.jobApp.user);
-
-        setImages(
-          resume.map((resum, index) => {
-            if (index === 0) {
-              return {
-                url: resum.url,
-                active: true,
-              };
-            } else {
-              return {
-                url: resum.url,
-                active: false,
-              };
-            }
-          })
-        );
-
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     } catch (error) {
       console.log(error);
       setIsLoading(false);
     }
   };
 
-  const handleSubmitResume = async (e) => {
-    e.preventDefault();
-
-    const resume = jobApplication.resume.map((data) => data.url);
-    const email = jobApplication.job.email;
-    const jobTitle = jobApplication.job.jobTitle;
-
-    try {
-      setIsLoading(true);
-
-      const { data } = await axios.post(
-        `${baseURL}/admin/send-job-application-resume`,
-        {
-          resume,
-          email,
-          jobTitle,
-        }
-      );
-
-      Swal.fire("Success", "Resume has been send", "success");
-
-      setIsLoading(false);
-    } catch (error) {
-      Swal.fire("Error", `${error.response.data.msg}`, "error");
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchJobInfo();
+    fetchEventInfo();
   }, []);
 
   useEffect(() => {
-    fetchJobInfo();
+    fetchEventInfo();
   }, [id]);
 
   return (
@@ -188,28 +135,21 @@ const JobNotification = () => {
       ) : (
         <div className={classes.paper}>
           <Grid container>
-            <Grid xs={12} md={6} lg={6} item>
+            <Grid xs={12} md={12} lg={12} item>
               <Card className={classes.formContainer}>
                 <CardContent>
                   <Typography
+                    align="center"
                     className={classes.formTitle}
                     gutterBottom
                     variant="h4"
-                    align="center"
                   >
-                    Job Application Form
+                    Attending at {eventData.eventTitle}
                   </Typography>
-                  <Typography
-                    paragraph
-                    color="textSecondary"
-                    align="center"
-                    gutterBottom
-                  >
-                    Appling for {mainData.job?.jobTitle} at {""}
-                    {mainData.job?.jobCompany}
-                  </Typography>
+                  {/* <Typography paragraph color="textSecondary" gutterBottom>
+                    Review profile
+                  </Typography> */}
                 </CardContent>
-
                 <form noValidate autoComplete="off">
                   <Grid
                     justify="center"
@@ -270,19 +210,6 @@ const JobNotification = () => {
                       />
                     </Grid>
 
-                    <Grid xs={12} sm={12} item>
-                      <Button
-                        className={classes.formButton}
-                        onClick={handleSubmitResume}
-                        type="submit"
-                        variant="contained"
-                        color="primary"
-                        fullWidth
-                      >
-                        Send Resume
-                      </Button>
-                    </Grid>
-
                     {/* <Grid xs={12} sm={12} item>
                     <Button
                       // className={classes.formButton}
@@ -299,21 +226,6 @@ const JobNotification = () => {
                 </form>
               </Card>
             </Grid>
-
-            <Grid xs={12} md={6} lg={6} item>
-              <Card className={classes.formContainer}>
-                <CardContent>
-                  <Typography
-                    className={classes.formTitle}
-                    gutterBottom
-                    variant="h4"
-                  >
-                    Resume
-                  </Typography>
-                </CardContent>
-                <ImageViewer setImages={setImages} images={images} />
-              </Card>
-            </Grid>
           </Grid>
         </div>
       )}
@@ -321,4 +233,4 @@ const JobNotification = () => {
   );
 };
 
-export default JobNotification;
+export default AttendEventInfo;
