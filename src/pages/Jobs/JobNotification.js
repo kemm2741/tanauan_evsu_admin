@@ -162,7 +162,11 @@ const JobNotification = () => {
         }
       );
 
-      Swal.fire("Success", "Resume has been send", "success");
+      Swal.fire(
+        "Success",
+        "Resume has been send please wait for the reponse!",
+        "success"
+      );
 
       setIsLoading(false);
     } catch (error) {
@@ -205,7 +209,7 @@ const JobNotification = () => {
                     align="center"
                     gutterBottom
                   >
-                    Appling for {mainData.job?.jobTitle} at {""}
+                    Applying for {mainData.job?.jobTitle} at {""}
                     {mainData.job?.jobCompany}
                   </Typography>
                 </CardContent>

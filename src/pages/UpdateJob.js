@@ -75,6 +75,7 @@ const UpdateJob = () => {
     jobTitle: "",
     jobCompany: " ",
     jobAddress: " ",
+    email: "",
   };
 
   const [editorState, setEditorState] = useState(null);
@@ -225,6 +226,10 @@ const UpdateJob = () => {
       return Swal.fire("error", "Job Address must not be empty", "error");
     }
 
+    if (jobData.email === "") {
+      return Swal.fire("error", "Email must not be empty", "error");
+    }
+
     if (description === "") {
       return Swal.fire("error", "Description must not be empty", "error");
     }
@@ -238,6 +243,7 @@ const UpdateJob = () => {
     form.append("jobTitle", jobData.jobTitle);
     form.append("jobCompany", jobData.jobCompany);
     form.append("jobAddress", jobData.jobAddress);
+    form.append("email", jobData.email);
     form.append("jobDescription", description);
     form.append("type", type);
     form.append("course", JSON.stringify(course));
@@ -264,6 +270,8 @@ const UpdateJob = () => {
       setIsLoading(true);
       const { data, status } = await axios.get(`${baseURL}/job/job-info/${id}`);
 
+      console.log(data);
+
       if (status === 200) {
         const {
           jobTitle,
@@ -271,6 +279,7 @@ const UpdateJob = () => {
           jobAddress,
           jobDescription,
           jobImage,
+          email,
           course,
         } = data.job;
 
@@ -324,6 +333,7 @@ const UpdateJob = () => {
           jobTitle: jobTitle,
           jobCompany: jobCompany,
           jobAddress: jobAddress,
+          email: email,
         });
 
         setIsLoading(false);
@@ -389,6 +399,18 @@ const UpdateJob = () => {
               variant="outlined"
               name="jobAddress"
               value={jobData.jobAddress}
+              fullWidth
+              required
+            />
+
+            <TextField
+              className={classes.field}
+              onChange={handleOnChange}
+              type="email"
+              label="Email"
+              variant="outlined"
+              name="email"
+              value={jobData.email}
               fullWidth
               required
             />

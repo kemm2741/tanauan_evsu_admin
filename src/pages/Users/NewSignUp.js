@@ -85,6 +85,10 @@ const useStyles = makeStyles((theme) => ({
     display: "block",
     margin: "0 auto",
   },
+  accountRemovedText: {
+    width: "100%",
+    textAlign: "center",
+  },
 }));
 
 const NewSignUp = () => {
@@ -93,7 +97,7 @@ const NewSignUp = () => {
   const classes = useStyles();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [userData, setUserData] = useState({});
+  const [userData, setUserData] = useState(null);
 
   //   Fetch Newly Signed Up User
   const fetchUserInfo = async () => {
@@ -102,9 +106,13 @@ const NewSignUp = () => {
       const { data, status } = await axios.get(
         `${baseURL}/user/get-user-information/${id}`
       );
+
       console.log(data);
-      setUserData(data);
-      setIsLoading(false);
+
+      if (status === 200) {
+        setUserData(data);
+        setIsLoading(false);
+      }
     } catch (error) {
       console.log(error);
       setIsLoading(false);
@@ -136,11 +144,13 @@ const NewSignUp = () => {
         `${baseURL}/user/deleting-pending-request`,
         {
           userId: id,
+          cloudinary_id: userData.profile.cloudinary_id,
         }
       );
       setIsLoading(false);
       fetchUserInfo();
       Swal.fire("Success", "User account is now deleted", "success");
+      // history.push("/dashboard");
     } catch (error) {
       setIsLoading(false);
       Swal.fire("Error", `${error.response.data.msg}`, "error");
@@ -149,10 +159,18 @@ const NewSignUp = () => {
 
   useEffect(() => {
     fetchUserInfo();
+
+    return () => {
+      setUserData(null);
+    };
   }, []);
 
   useEffect(() => {
     fetchUserInfo();
+
+    return () => {
+      setUserData(null);
+    };
   }, [id]);
 
   return (
@@ -164,18 +182,19 @@ const NewSignUp = () => {
       ) : (
         <div className={classes.paper}>
           <Grid container>
-            <Grid xs={12} md={12} lg={12} item>
-              <Card className={classes.formContainer}>
-                <CardContent>
-                  <Typography
-                    className={classes.formTitle}
-                    gutterBottom
-                    align="center"
-                    variant="h4"
-                  >
-                    Newly Signed Up Alumni
-                  </Typography>
-                  {/* <Typography
+            {userData ? (
+              <Grid xs={12} md={12} lg={12} item>
+                <Card className={classes.formContainer}>
+                  <CardContent>
+                    <Typography
+                      className={classes.formTitle}
+                      gutterBottom
+                      align="center"
+                      variant="h4"
+                    >
+                      Newly Signed Up Alumni
+                    </Typography>
+                    {/* <Typography
                     paragraph
                     color="textSecondary"
                     gutterBottom
@@ -183,98 +202,115 @@ const NewSignUp = () => {
                   >
                     Review profile
                   </Typography> */}
-                </CardContent>
-                <form noValidate autoComplete="off">
-                  <Grid
-                    justify="center"
-                    alignItems="center"
-                    className={classes.profileImageContainer}
-                    xs={5}
-                    item
-                  >
-                    <img
-                      className={classes.profileImage}
-                      src={userData?.profile?.url}
-                      alt="profile-pic"
-                    />
-                  </Grid>
-
-                  <Grid container spacing={2}>
-                    <Grid xs={12} item>
-                      <TextField
-                        value={userData.firstname}
-                        // onChange={handleOnChange}
-                        // name="email"
-                        label="First Name"
-                        variant="outlined"
-                        fullWidth
+                  </CardContent>
+                  <form noValidate autoComplete="off">
+                    <Grid
+                      justify="center"
+                      alignItems="center"
+                      className={classes.profileImageContainer}
+                      xs={5}
+                      item
+                    >
+                      <img
+                        className={classes.profileImage}
+                        src={userData?.profile?.url}
+                        alt="profile-pic"
                       />
                     </Grid>
 
-                    <Grid xs={12} item>
-                      <TextField
-                        value={userData.middlename}
-                        // onChange={handleOnChange}
-                        // name="email"
-                        label="Middle Name"
-                        variant="outlined"
-                        fullWidth
-                      />
-                    </Grid>
+                    <Grid container spacing={2}>
+                      <Grid xs={12} item>
+                        <TextField
+                          value={userData.firstname}
+                          // onChange={handleOnChange}
+                          // name="email"
+                          label="First Name"
+                          variant="outlined"
+                          fullWidth
+                        />
+                      </Grid>
 
-                    <Grid xs={12} sm={12} item>
-                      <TextField
-                        value={userData.lastname}
-                        // onChange={handleOnChange}
-                        // name=""
-                        label="Last Name"
-                        variant="outlined"
-                        fullWidth
-                      />
-                    </Grid>
+                      <Grid xs={12} item>
+                        <TextField
+                          value={userData.middlename}
+                          // onChange={handleOnChange}
+                          // name="email"
+                          label="Middle Name"
+                          variant="outlined"
+                          fullWidth
+                        />
+                      </Grid>
 
-                    <Grid xs={12} sm={12} item>
-                      <TextField
-                        value={userData.address}
-                        // onChange={handleOnChange}
-                        // name="oldPassword"
-                        label="Address"
-                        variant="outlined"
-                        fullWidth
-                      />
-                    </Grid>
+                      <Grid xs={12} sm={12} item>
+                        <TextField
+                          value={userData.lastname}
+                          // onChange={handleOnChange}
+                          // name=""
+                          label="Last Name"
+                          variant="outlined"
+                          fullWidth
+                        />
+                      </Grid>
 
-                    {userData.status === "pending" && (
-                      <>
-                        <Grid xs={12} sm={12} item>
-                          <Button
-                            className={classes.formButton}
-                            onClick={handleApprovedAccount}
-                            type="submit"
-                            variant="contained"
-                            color="primary"
-                            fullWidth
-                          >
-                            Approved Account
-                          </Button>
-                        </Grid>
+                      <Grid xs={12} sm={12} item>
+                        <TextField
+                          value={userData.address}
+                          // onChange={handleOnChange}
+                          // name="oldPassword"
+                          label="Address"
+                          variant="outlined"
+                          fullWidth
+                        />
+                      </Grid>
 
-                        <Grid xs={12} sm={12} item>
-                          <Button
-                            className={classes.formButton}
-                            onClick={deleteUserAccount}
-                            type="submit"
-                            variant="contained"
-                            color="primary"
-                            fullWidth
-                          >
-                            Delete Account
-                          </Button>
-                        </Grid>
-                      </>
-                    )}
+                      {userData.status === "pending" && (
+                        <>
+                          <Grid xs={12} sm={12} item>
+                            <Button
+                              className={classes.formButton}
+                              onClick={handleApprovedAccount}
+                              type="submit"
+                              variant="contained"
+                              color="primary"
+                              fullWidth
+                            >
+                              Approved Account
+                            </Button>
+                          </Grid>
 
-                    {/* <Grid xs={12} sm={12} item>
+                          <Grid xs={12} sm={12} item>
+                            <Button
+                              className={classes.formButton}
+                              onClick={Swal.fire({
+                                title: "Are you sure?",
+                                text: "Account will be deleted!",
+                                icon: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#3085d6",
+                                cancelButtonColor: "#d33",
+                                confirmButtonText: "Yes, delete it!",
+                              }).then((result) => {
+                                if (result.isConfirmed) {
+                                  deleteUserAccount();
+                                  // Swal.fire(
+                                  //   "Deleted!",
+                                  //   "Your file has been deleted.",
+                                  //   "success"
+                                  // );
+                                }
+                              })}
+                              type="submit"
+                              variant="contained"
+                              color="primary"
+                              fullWidth
+                            >
+                              Delete Account
+                            </Button>
+                          </Grid>
+                        </>
+                      )}
+
+                      {/* <Grid xs={12} sm={12} item>
                     <Button
                       // className={classes.formButton}
                       // onClick={deleteAccount}
@@ -286,10 +322,15 @@ const NewSignUp = () => {
                       Delete Resume
                     </Button>
                   </Grid> */}
-                  </Grid>
-                </form>
-              </Card>
-            </Grid>
+                    </Grid>
+                  </form>
+                </Card>
+              </Grid>
+            ) : (
+              <div className={classes.accountRemovedText}>
+                <h1> Account has been removed! </h1>
+              </div>
+            )}
           </Grid>
         </div>
       )}
