@@ -126,7 +126,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   notifcationDiv: {
-    marginRight: "5px",
+    marginRight: "8px",
+    marginTop: "12px",
   },
   customBadge: {
     backgroundColor: "white",
@@ -137,6 +138,14 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: "600px",
     overflowY: "auto",
     paddingInline: "10px",
+    [theme.breakpoints.down("sm")]: {
+      width: "550px",
+      overflowX: "auto",
+    },
+    [theme.breakpoints.down("xs")]: {
+      width: "420px",
+      overflowX: "auto",
+    },
   },
   viewed: {
     backgroundColor: "#E7DEDE",
@@ -401,7 +410,10 @@ export default function Layout({ children }) {
                                 )}
                               </ListItemIcon>
 
-                              <Typography variant="inherit" noWrap>
+                              <Typography
+                                style={{ width: "100%", overflowX: "auto" }}
+                                variant="inherit"
+                              >
                                 <p
                                   className="p-2"
                                   dangerouslySetInnerHTML={{

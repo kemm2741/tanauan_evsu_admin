@@ -34,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
   },
   formContainer: {
     width: "530px",
+    border: "2px #710000 solid",
     margin: "0 auto",
     padding: theme.spacing(3),
     paddingTop: theme.spacing(2),

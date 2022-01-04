@@ -293,6 +293,24 @@ const NewSignUp = () => {
 
                       <Grid xs={12} sm={6} item>
                         <TextField
+                          value={userData.presentOccupation}
+                          label="Present Occupation"
+                          variant="outlined"
+                          fullWidth
+                        />
+                      </Grid>
+
+                      <Grid xs={12} sm={6} item>
+                        <TextField
+                          value={userData.companyAddress}
+                          label="Company Address"
+                          variant="outlined"
+                          fullWidth
+                        />
+                      </Grid>
+
+                      <Grid xs={12} sm={6} item>
+                        <TextField
                           value={userData.email}
                           label="Email"
                           variant="outlined"
