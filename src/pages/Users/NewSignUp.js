@@ -29,10 +29,15 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(4),
   },
   formContainer: {
-    width: "530px",
+    width: "80%",
+    border: "2px #710000 solid",
     margin: "0 auto",
     padding: theme.spacing(3),
     paddingTop: theme.spacing(2),
+
+    [theme.breakpoints.down("md")]: {
+      width: "100%",
+    },
     [theme.breakpoints.down("xs")]: {
       marginTop: "-40px",
       width: "100%",
@@ -130,6 +135,7 @@ const NewSignUp = () => {
       setIsLoading(false);
       fetchUserInfo();
       Swal.fire("Success", "User account is now approved", "success");
+      history.push("/alumni");
     } catch (error) {
       setIsLoading(false);
       Swal.fire("Error", `${error.response.data.msg}`, "error");
@@ -137,7 +143,6 @@ const NewSignUp = () => {
   };
 
   const deleteUserAccount = async (e) => {
-    e.preventDefault();
     try {
       setIsLoading(true);
       const { data } = await axios.post(
@@ -148,7 +153,7 @@ const NewSignUp = () => {
         }
       );
       setIsLoading(false);
-      fetchUserInfo();
+      setUserData(null);
       Swal.fire("Success", "User account is now deleted", "success");
       // history.push("/dashboard");
     } catch (error) {
@@ -159,7 +164,6 @@ const NewSignUp = () => {
 
   useEffect(() => {
     fetchUserInfo();
-
     return () => {
       setUserData(null);
     };
@@ -167,7 +171,6 @@ const NewSignUp = () => {
 
   useEffect(() => {
     fetchUserInfo();
-
     return () => {
       setUserData(null);
     };
@@ -186,22 +189,37 @@ const NewSignUp = () => {
               <Grid xs={12} md={12} lg={12} item>
                 <Card className={classes.formContainer}>
                   <CardContent>
-                    <Typography
-                      className={classes.formTitle}
-                      gutterBottom
-                      align="center"
-                      variant="h4"
-                    >
-                      Newly Signed Up Alumni
-                    </Typography>
-                    {/* <Typography
-                    paragraph
-                    color="textSecondary"
-                    gutterBottom
-                    align="center"
-                  >
-                    Review profile
-                  </Typography> */}
+                    {userData.status === "active" ? (
+                      <>
+                        <Typography
+                          className={classes.formTitle}
+                          gutterBottom
+                          align="center"
+                          variant="h4"
+                        >
+                          Account is actived
+                        </Typography>
+                      </>
+                    ) : (
+                      <>
+                        <Typography
+                          className={classes.formTitle}
+                          gutterBottom
+                          align="center"
+                          variant="h4"
+                        >
+                          Newly Signed Up Alumni
+                        </Typography>
+                        <Typography
+                          paragraph
+                          color="textSecondary"
+                          gutterBottom
+                          align="center"
+                        >
+                          Review profile
+                        </Typography>
+                      </>
+                    )}
                   </CardContent>
                   <form noValidate autoComplete="off">
                     <Grid
@@ -219,45 +237,73 @@ const NewSignUp = () => {
                     </Grid>
 
                     <Grid container spacing={2}>
-                      <Grid xs={12} item>
+                      <Grid xs={12} sm={6} item>
                         <TextField
                           value={userData.firstname}
-                          // onChange={handleOnChange}
-                          // name="email"
                           label="First Name"
                           variant="outlined"
                           fullWidth
                         />
                       </Grid>
 
-                      <Grid xs={12} item>
+                      <Grid xs={12} sm={6} item>
                         <TextField
                           value={userData.middlename}
-                          // onChange={handleOnChange}
-                          // name="email"
                           label="Middle Name"
                           variant="outlined"
                           fullWidth
                         />
                       </Grid>
 
-                      <Grid xs={12} sm={12} item>
+                      <Grid xs={12} sm={6} item>
                         <TextField
                           value={userData.lastname}
-                          // onChange={handleOnChange}
-                          // name=""
                           label="Last Name"
                           variant="outlined"
                           fullWidth
                         />
                       </Grid>
 
-                      <Grid xs={12} sm={12} item>
+                      <Grid xs={12} sm={6} item>
                         <TextField
-                          value={userData.address}
-                          // onChange={handleOnChange}
-                          // name="oldPassword"
-                          label="Address"
+                          value={userData.placeOfBirth}
+                          label="Place of Birth"
+                          variant="outlined"
+                          fullWidth
+                        />
+                      </Grid>
+
+                      <Grid xs={12} sm={6} item>
+                        <TextField
+                          value={userData.yearGraduated}
+                          label="Year Graduated"
+                          variant="outlined"
+                          fullWidth
+                        />
+                      </Grid>
+
+                      <Grid xs={12} sm={6} item>
+                        <TextField
+                          value={userData.course.courseName}
+                          label="Course"
+                          variant="outlined"
+                          fullWidth
+                        />
+                      </Grid>
+
+                      <Grid xs={12} sm={6} item>
+                        <TextField
+                          value={userData.email}
+                          label="Email"
+                          variant="outlined"
+                          fullWidth
+                        />
+                      </Grid>
+
+                      <Grid xs={12} sm={6} item>
+                        <TextField
+                          value={userData.phone}
+                          label="Contact"
                           variant="outlined"
                           fullWidth
                         />
@@ -265,7 +311,7 @@ const NewSignUp = () => {
 
                       {userData.status === "pending" && (
                         <>
-                          <Grid xs={12} sm={12} item>
+                          <Grid xs={12} sm={6} item>
                             <Button
                               className={classes.formButton}
                               onClick={handleApprovedAccount}
@@ -278,27 +324,25 @@ const NewSignUp = () => {
                             </Button>
                           </Grid>
 
-                          <Grid xs={12} sm={12} item>
+                          <Grid xs={12} sm={6} item>
                             <Button
                               className={classes.formButton}
-                              onClick={Swal.fire({
-                                title: "Are you sure?",
-                                text: "Account will be deleted!",
-                                icon: "warning",
-                                showCancelButton: true,
-                                confirmButtonColor: "#3085d6",
-                                cancelButtonColor: "#d33",
-                                confirmButtonText: "Yes, delete it!",
-                              }).then((result) => {
-                                if (result.isConfirmed) {
-                                  deleteUserAccount();
-                                  // Swal.fire(
-                                  //   "Deleted!",
-                                  //   "Your file has been deleted.",
-                                  //   "success"
-                                  // );
-                                }
-                              })}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                Swal.fire({
+                                  title: "Are you sure?",
+                                  text: "Account will be deleted!",
+                                  icon: "warning",
+                                  showCancelButton: true,
+                                  confirmButtonColor: "#3085d6",
+                                  cancelButtonColor: "#d33",
+                                  confirmButtonText: "Yes, delete it!",
+                                }).then((result) => {
+                                  if (result.isConfirmed) {
+                                    deleteUserAccount();
+                                  }
+                                });
+                              }}
                               type="submit"
                               variant="contained"
                               color="primary"
@@ -309,19 +353,6 @@ const NewSignUp = () => {
                           </Grid>
                         </>
                       )}
-
-                      {/* <Grid xs={12} sm={12} item>
-                    <Button
-                      // className={classes.formButton}
-                      // onClick={deleteAccount}
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      fullWidth
-                    >
-                      Delete Resume
-                    </Button>
-                  </Grid> */}
                     </Grid>
                   </form>
                 </Card>

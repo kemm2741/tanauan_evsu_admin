@@ -143,9 +143,7 @@ const JobNotification = () => {
     }
   };
 
-  const handleSubmitResume = async (e) => {
-    e.preventDefault();
-
+  const handleSubmitResume = async () => {
     const resume = jobApplication.resume.map((data) => data.url);
     const email = jobApplication.job.email;
     const jobTitle = jobApplication.job.jobTitle;
@@ -161,13 +159,7 @@ const JobNotification = () => {
           jobTitle,
         }
       );
-
-      Swal.fire(
-        "Success",
-        "Resume has been send please wait for the reponse!",
-        "success"
-      );
-
+      Swal.fire("Success", "Resume has been sent!", "success");
       setIsLoading(false);
     } catch (error) {
       Swal.fire("Error", `${error.response.data.msg}`, "error");
@@ -230,34 +222,37 @@ const JobNotification = () => {
                   </Grid>
 
                   <Grid container spacing={2}>
-                    <Grid xs={12} item>
+                    <Grid xs={12} sm={6} item>
                       <TextField
                         value={userData.firstname}
-                        // onChange={handleOnChange}
-                        // name="email"
                         label="First Name"
                         variant="outlined"
                         fullWidth
                       />
                     </Grid>
 
-                    <Grid xs={12} item>
+                    <Grid xs={12} sm={6} item>
                       <TextField
                         value={userData.middlename}
-                        // onChange={handleOnChange}
-                        // name="email"
                         label="Middle Name"
                         variant="outlined"
                         fullWidth
                       />
                     </Grid>
 
-                    <Grid xs={12} sm={12} item>
+                    <Grid xs={12} sm={6} item>
                       <TextField
                         value={userData.lastname}
-                        // onChange={handleOnChange}
-                        // name=""
                         label="Last Name"
+                        variant="outlined"
+                        fullWidth
+                      />
+                    </Grid>
+
+                    <Grid xs={12} sm={6} item>
+                      <TextField
+                        value={userData.placeOfBirth}
+                        label="Place of Birth"
                         variant="outlined"
                         fullWidth
                       />
@@ -265,10 +260,35 @@ const JobNotification = () => {
 
                     <Grid xs={12} sm={12} item>
                       <TextField
-                        value={userData.address}
-                        // onChange={handleOnChange}
-                        // name="oldPassword"
-                        label="Address"
+                        value={userData.yearGraduated}
+                        label="Year Graduated"
+                        variant="outlined"
+                        fullWidth
+                      />
+                    </Grid>
+
+                    {/* <Grid xs={12} sm={6} item>
+                      <TextField
+                        value={userData.course.courseName}
+                        label="Course"
+                        variant="outlined"
+                        fullWidth
+                      />
+                    </Grid> */}
+
+                    <Grid xs={12} sm={6} item>
+                      <TextField
+                        value={userData.email}
+                        label="Email"
+                        variant="outlined"
+                        fullWidth
+                      />
+                    </Grid>
+
+                    <Grid xs={12} sm={6} item>
+                      <TextField
+                        value={userData.phone}
+                        label="Contact"
                         variant="outlined"
                         fullWidth
                       />
@@ -277,7 +297,23 @@ const JobNotification = () => {
                     <Grid xs={12} sm={12} item>
                       <Button
                         className={classes.formButton}
-                        onClick={handleSubmitResume}
+                        // onClick={handleSubmitResume}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          Swal.fire({
+                            title: `You are sending this resume to ${mainData.job?.jobCompany}`,
+                            text: "please review resume before sending",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#3085d6",
+                            cancelButtonColor: "#d33",
+                            confirmButtonText: "Submit!",
+                          }).then((result) => {
+                            if (result.isConfirmed) {
+                              handleSubmitResume();
+                            }
+                          });
+                        }}
                         type="submit"
                         variant="contained"
                         color="primary"

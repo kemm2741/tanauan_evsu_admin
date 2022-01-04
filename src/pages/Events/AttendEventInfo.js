@@ -29,10 +29,14 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(4),
   },
   formContainer: {
-    width: "530px",
+    width: "80%",
+    border: "2px #710000 solid",
     margin: "0 auto",
     padding: theme.spacing(3),
     paddingTop: theme.spacing(2),
+    [theme.breakpoints.down("md")]: {
+      width: "100%",
+    },
     [theme.breakpoints.down("xs")]: {
       marginTop: "-40px",
       width: "100%",
@@ -111,6 +115,8 @@ const AttendEventInfo = () => {
       setEventData(data.event);
       setUserData(data.user);
 
+      console.log(data.user);
+
       setIsLoading(false);
     } catch (error) {
       console.log(error);
@@ -166,34 +172,37 @@ const AttendEventInfo = () => {
                   </Grid>
 
                   <Grid container spacing={2}>
-                    <Grid xs={12} item>
+                    <Grid xs={12} sm={6} item>
                       <TextField
                         value={userData.firstname}
-                        // onChange={handleOnChange}
-                        // name="email"
                         label="First Name"
                         variant="outlined"
                         fullWidth
                       />
                     </Grid>
 
-                    <Grid xs={12} item>
+                    <Grid xs={12} sm={6} item>
                       <TextField
                         value={userData.middlename}
-                        // onChange={handleOnChange}
-                        // name="email"
                         label="Middle Name"
                         variant="outlined"
                         fullWidth
                       />
                     </Grid>
 
-                    <Grid xs={12} sm={12} item>
+                    <Grid xs={12} sm={6} item>
                       <TextField
                         value={userData.lastname}
-                        // onChange={handleOnChange}
-                        // name=""
                         label="Last Name"
+                        variant="outlined"
+                        fullWidth
+                      />
+                    </Grid>
+
+                    <Grid xs={12} sm={6} item>
+                      <TextField
+                        value={userData.placeOfBirth}
+                        label="Place of Birth"
                         variant="outlined"
                         fullWidth
                       />
@@ -201,10 +210,35 @@ const AttendEventInfo = () => {
 
                     <Grid xs={12} sm={12} item>
                       <TextField
-                        value={userData.address}
-                        // onChange={handleOnChange}
-                        // name="oldPassword"
-                        label="Address"
+                        value={userData.yearGraduated}
+                        label="Year Graduated"
+                        variant="outlined"
+                        fullWidth
+                      />
+                    </Grid>
+
+                    {/* <Grid xs={12} sm={6} item>
+                      <TextField
+                        value={userData.course.courseName}
+                        label="Course"
+                        variant="outlined"
+                        fullWidth
+                      />
+                    </Grid> */}
+
+                    <Grid xs={12} sm={6} item>
+                      <TextField
+                        value={userData.email}
+                        label="Email"
+                        variant="outlined"
+                        fullWidth
+                      />
+                    </Grid>
+
+                    <Grid xs={12} sm={6} item>
+                      <TextField
+                        value={userData.phone}
+                        label="Contact"
                         variant="outlined"
                         fullWidth
                       />

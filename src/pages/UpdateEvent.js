@@ -259,9 +259,11 @@ const UpdateEvent = () => {
       console.log(data);
       setIsLoading(false);
       history.push("/events");
+      Swal.fire("Success", "Event was successfully edited", "success");
     } catch (error) {
       console.log(error);
       setIsLoading(false);
+      Swal.fire("Error", `${error.response.data.msg}`, "error");
     }
   };
 

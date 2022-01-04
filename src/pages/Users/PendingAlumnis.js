@@ -187,8 +187,6 @@ const PendingAlumnis = () => {
       });
       setData(withAge);
 
-      console.log(withAge);
-
       setIsLoading(false);
     } catch (error) {
       console.log(error);

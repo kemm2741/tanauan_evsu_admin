@@ -145,8 +145,12 @@ const CourseHelper = ({ graduates, courseName }) => {
   const [dataAlumni, setDataAlumni] = useState(withAge);
 
   // Statistics
-  const maleLength = dataAlumni.filter((user) => user.sex === "male");
-  const femaleLength = dataAlumni.filter((user) => user.sex === "female");
+  const maleLength = dataAlumni.filter(
+    (user) => user.sex.toLowerCase() === "male"
+  );
+  const femaleLength = dataAlumni.filter(
+    (user) => user.sex.toLowerCase() === "female"
+  );
 
   // Working and Not Working Data
   const [data, setData] = useState([]);
@@ -163,7 +167,7 @@ const CourseHelper = ({ graduates, courseName }) => {
       { name: "Male", value: maleLength.length },
       { name: "Female", value: femaleLength.length },
     ]);
-  }, []);
+  }, [dataAlumni]);
 
   return (
     <div style={{ padding: "50px 40px", backgroundColor: "#ebe9e9" }}>
@@ -192,8 +196,8 @@ const CourseHelper = ({ graduates, courseName }) => {
               data={data}
               cx={200}
               cy={200}
-              innerRadius={70}
-              outerRadius={90}
+              innerRadius={65}
+              outerRadius={80}
               fill="#710000"
               dataKey="value"
               onMouseEnter={onPieEnter}

@@ -258,9 +258,10 @@ const UpdateJob = () => {
       console.log(data);
       setIsLoading(false);
       history.push("/jobs");
+      return Swal.fire("Success", "Successfully edited the job", "success");
     } catch (error) {
-      console.log(error);
       setIsLoading(false);
+      return Swal.fire("Error", `${error.response.data.msg}`, "error");
     }
   };
 

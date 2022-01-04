@@ -193,8 +193,9 @@ const CreateJob = () => {
       const { data } = await axios.post(`${baseURL}/job`, form);
       console.log(data);
 
-      history.push("/jobs");
       setIsLoading(false);
+      Swal.fire("Success", "New job has been created", "success");
+      history.push("/jobs");
     } catch (error) {
       console.log(error);
       setIsLoading(false);

@@ -187,8 +187,6 @@ const CreateEvent = () => {
 
     for (let image of images) {
       form.append("images", image.file);
-
-      console.log(image.file);
     }
 
     try {
@@ -196,11 +194,11 @@ const CreateEvent = () => {
       const { data } = await axios.post(`${baseURL}/event`, form);
       console.log(data);
       setIsLoading(false);
-
+      Swal.fire("Success", "Successfully created a new event", "success");
       history.push("/events");
     } catch (error) {
-      console.log(error);
       setIsLoading(false);
+      Swal.fire("Error", `${error.response.data.msg}`, "error");
     }
   };
 

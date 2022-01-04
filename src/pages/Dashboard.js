@@ -30,6 +30,7 @@ import { ResponsiveContainer, PieChart, Pie, Sector } from "recharts";
 // React Icons
 import { RiAdminLine } from "react-icons/ri";
 import { ImBooks } from "react-icons/im";
+import { HiUsers } from "react-icons/hi";
 import { FaUserGraduate } from "react-icons/fa";
 import { MdEventNote, MdWork, MdEmail } from "react-icons/md";
 
@@ -340,7 +341,7 @@ const Dashboard = () => {
         isLoading: true,
       });
 
-      const { data } = await axios.get(`${baseURL}/subscribe`);
+      const { data } = await axios.get(`${baseURL}/user/pending-user`);
 
       // setSubscriberData(data);
       setSubscriberData({
@@ -531,14 +532,14 @@ const Dashboard = () => {
         <Grid xs={12} md={6} lg={4} item align="center">
           <Paper
             onClick={() => {
-              history.push("/subscriber");
+              history.push("/alumni/pending-user");
             }}
             className={classes.paper}
           >
             <Grid container>
               <Grid xs={6} md={6} lg={6} item>
                 <Typography variant="h5" className={classes.title}>
-                  Subscribed Emails
+                  Pending Accounts
                 </Typography>
 
                 {subscriberData.isLoading ? (
@@ -554,7 +555,7 @@ const Dashboard = () => {
                 )}
               </Grid>
               <Grid xs={6} md={6} lg={6} item>
-                <MdEmail size={45} />
+                <HiUsers size={45} />
               </Grid>
             </Grid>
           </Paper>

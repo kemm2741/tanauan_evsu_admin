@@ -111,12 +111,12 @@ function App() {
             <PrivateRoute path="/admin">
               <Admin />
             </PrivateRoute>
-            <PrivateRoute path="/user">
+            {/* <PrivateRoute path="/user">
               <User />
-            </PrivateRoute>
-            <PrivateRoute path="/subscriber">
+            </PrivateRoute> */}
+            {/* <PrivateRoute path="/subscriber">
               <Subscribers />
-            </PrivateRoute>
+            </PrivateRoute> */}
             <PrivateRoute path="/profile">
               <Profile />
             </PrivateRoute>
