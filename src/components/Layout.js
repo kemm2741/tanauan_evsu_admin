@@ -236,7 +236,7 @@ export default function Layout({ children }) {
       } catch (error) {
         console.log(error);
       }
-    }, 4000);
+    }, 3000);
   };
 
   useEffect(() => {

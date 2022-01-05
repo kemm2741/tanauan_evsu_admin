@@ -208,7 +208,7 @@ const AttendEventInfo = () => {
                       />
                     </Grid>
 
-                    <Grid xs={12} sm={12} item>
+                    <Grid xs={12} sm={6} item>
                       <TextField
                         value={userData.yearGraduated}
                         label="Year Graduated"
@@ -217,14 +217,14 @@ const AttendEventInfo = () => {
                       />
                     </Grid>
 
-                    {/* <Grid xs={12} sm={6} item>
+                    <Grid xs={12} sm={6} item>
                       <TextField
-                        value={userData.course.courseName}
+                        value={userData?.course?.courseName}
                         label="Course"
                         variant="outlined"
                         fullWidth
                       />
-                    </Grid> */}
+                    </Grid>
 
                     <Grid xs={12} sm={6} item>
                       <TextField
