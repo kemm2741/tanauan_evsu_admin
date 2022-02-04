@@ -284,20 +284,32 @@ export default function Layout({ children }) {
           <ListItem
             button
             onClick={() => {
-              setMobileOpen(false);
-              logout();
-              axios
-                .post(`${baseURL}/log`, {
-                  name: admin.userName,
-                  logDescription: "Log-out",
-                })
-                .then((res) => {
-                  console.log(res);
-                })
-                .catch((err) => {
-                  console.log(err);
-                });
-              history.push("/login");
+              Swal.fire({
+                title: "Warning",
+                text: "Are you sure you want to logout?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Log-out",
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  setMobileOpen(false);
+                  logout();
+                  axios
+                    .post(`${baseURL}/log`, {
+                      name: admin.userName,
+                      logDescription: "Log-out",
+                    })
+                    .then((res) => {
+                      console.log(res);
+                    })
+                    .catch((err) => {
+                      console.log(err);
+                    });
+                  history.push("/login");
+                }
+              });
             }}
           >
             <ListItemIcon>
